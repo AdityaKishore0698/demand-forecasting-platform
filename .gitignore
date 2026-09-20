@@ -44,6 +44,10 @@ catboost_info/
 # trained on the SYNTHETIC dataset (configs/demo.yaml), is published.
 artifacts/*
 !artifacts/demo/
+!artifacts/demo_single/
+
+# --- Owner-only working documents (never publish) ---
+docs/ENSEMBLE_MIGRATION_AUDIT.md
 
 # --- Temporary / cache files ---
 *.log

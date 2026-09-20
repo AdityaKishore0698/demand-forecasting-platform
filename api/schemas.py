@@ -14,6 +14,8 @@ class HealthResponse(BaseModel):
     data_through: Optional[date] = Field(None, description="Last day of known history")
     forecast_horizon_days: Optional[int] = None
     data_label: Optional[str] = Field(None, description="Provenance tag, e.g. 'synthetic-demo'")
+    model_type: Optional[str] = Field(None, description="e.g. 'LightGBM + CatBoost + XGBoost ensemble'")
+    model_components: Optional[List[str]] = Field(None, description="Models loaded at start-up")
     detail: Optional[str] = None
 
 
@@ -96,6 +98,7 @@ class ForecastResponse(BaseModel):
     horizon: int
     origin_date: date = Field(..., description="Last known day the forecast is anchored to")
     model_version: str
+    model_type: Optional[str] = None
     forecast: List[ForecastPoint]
     summary: ForecastSummary
     notes: List[str]
@@ -109,6 +112,18 @@ class Driver(BaseModel):
     effect_pct: float = Field(..., description="Multiplicative effect on expected demand, in %")
 
 
+class ComponentExplanation(BaseModel):
+    model: str
+    label: str
+    weight: float
+    exactness: str = Field(..., description="How faithful this explanation is for THIS model")
+    prediction: float
+    baseline_demand: float
+    reconstruction_error_pct: float
+    drivers: List[Driver]
+    other_features_effect_pct: float
+
+
 class ExplainResponse(BaseModel):
     store_id: int
     date: date
@@ -119,6 +134,11 @@ class ExplainResponse(BaseModel):
     drivers: List[Driver]
     other_features_effect_pct: float
     note: str
+    explanation_scope: str = Field("lightgbm_exact", description="'lightgbm_exact' (single model) or 'ensemble_approximate'; "
+                                   "per-model entries in `components` are exact for their own model")
+    explanation_exactness: str = "exact"
+    approximation: Optional[Dict[str, Any]] = Field(None, description="How the ensemble-level drivers were derived and their reconstruction error")
+    components: Optional[List[ComponentExplanation]] = None
 
 
 class BacktestPoint(BaseModel):

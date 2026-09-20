@@ -51,7 +51,30 @@ class ValidationConfig:
 
 
 @dataclass
+class EnsembleConfig:
+    """Final-model recipe for the two non-LightGBM members plus the blend.
+
+    Values are the archived final recipes from the original experiment scripts, verified identical to
+    ``experiments/ensemble_corrected/recipes.py`` by ``tests/test_ensemble_recipes.py``. The LightGBM member is
+    configured by ``ModelConfig.n_estimators`` / ``ModelConfig.params``.
+    """
+    weights: Dict[str, float] = field(default_factory=lambda: {"lightgbm": 0.6, "catboost": 0.1, "xgboost": 0.3})
+    catboost_params: Dict[str, Any] = field(default_factory=lambda: {
+        "loss_function": "RMSE", "eval_metric": "RMSE", "iterations": 1320, "learning_rate": 0.08, "depth": 6,
+        "l2_leaf_reg": 3.0, "boosting_type": "Plain", "bootstrap_type": "Bernoulli", "subsample": 0.8,
+        "thread_count": -1, "verbose": 0,
+    })
+    xgboost_params: Dict[str, Any] = field(default_factory=lambda: {
+        "objective": "reg:tweedie", "tweedie_variance_power": 1.1, "learning_rate": 0.05, "max_depth": 8,
+        "min_child_weight": 50, "reg_lambda": 1.0, "subsample": 0.85, "colsample_bytree": 0.85, "tree_method": "hist",
+    })
+    xgboost_rounds: int = 590
+
+
+@dataclass
 class ModelConfig:
+    type: str = "boosting_ensemble"      # "boosting_ensemble" (final) | "lightgbm_single" (rollback path)
+    ensemble: EnsembleConfig = field(default_factory=EnsembleConfig)
     n_estimators: int = 1160
     params: Dict[str, Any] = field(default_factory=lambda: {
         "objective": "tweedie",
@@ -148,4 +171,8 @@ def load_config(path: Optional[os.PathLike] = None, overrides: Optional[Dict[str
         raise ValueError("forecast.horizon_days must be >= 1")
     if cfg.validation.n_windows < 1:
         raise ValueError("validation.n_windows must be >= 1")
+    if cfg.model.type not in ("boosting_ensemble", "lightgbm_single"):
+        raise ValueError("model.type must be 'boosting_ensemble' or 'lightgbm_single'")
+    if abs(sum(cfg.model.ensemble.weights.values()) - 1.0) > 1e-9:
+        raise ValueError("model.ensemble.weights must sum to 1")
     return cfg

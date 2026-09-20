@@ -24,7 +24,7 @@ from api import __version__
 from api.routers import forecast, insights, stores, system
 from src.forecasting.artifacts import default_artifact_dir
 from src.forecasting.service import (
-    ArtifactsNotFound, ForecastRequestError, ForecastService, StoreNotFound,
+    ArtifactsNotFound, ForecastRequestError, ForecastService, PredictionIntegrityError, StoreNotFound,
 )
 
 logger = logging.getLogger("api")
@@ -69,6 +69,11 @@ def create_app(artifact_dir: Optional[Path] = None) -> FastAPI:
     @app.exception_handler(ForecastRequestError)
     async def _bad_request(_: Request, exc: ForecastRequestError):
         return JSONResponse(status_code=422, content={"detail": str(exc)})
+
+    @app.exception_handler(PredictionIntegrityError)
+    async def _integrity(_: Request, exc: PredictionIntegrityError):
+        logger.error("Prediction integrity check failed: %s", exc)
+        return JSONResponse(status_code=500, content={"detail": f"Forecast rejected by an internal consistency check: {exc}"})
 
     @app.exception_handler(Exception)
     async def _unhandled(_: Request, exc: Exception):

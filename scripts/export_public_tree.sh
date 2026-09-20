@@ -25,7 +25,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 mkdir -p "$TARGET"
 
-OWNER_ONLY='^docs/(PUBLIC_REPOSITORY_MANIFEST|PUBLICATION_CHECKLIST|INTERVIEW_GUIDE|RESUME_ENTRY)\.md$'
+OWNER_ONLY='^docs/(PUBLIC_REPOSITORY_MANIFEST|PUBLICATION_CHECKLIST|INTERVIEW_GUIDE|RESUME_ENTRY|ENSEMBLE_MIGRATION_AUDIT)\.md$'
 
 # tracked + untracked-but-not-ignored files that exist on disk
 git ls-files -co --exclude-standard | sort -u | while IFS= read -r f; do

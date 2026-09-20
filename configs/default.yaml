@@ -28,7 +28,34 @@ validation:
   n_windows: 3              # window 0 is the headline hold-out; the others are earlier robustness checks
 
 model:
-  n_estimators: 1160        # fixed round count (1,059 best iteration from early stopping + ~10% margin)
+  type: boosting_ensemble   # final model: LightGBM + CatBoost + XGBoost. Set to lightgbm_single for the rollback path.
+  ensemble:
+    # Archived final recipes (verified identical to experiments/ensemble_corrected/recipes.py by a test). Not tuned here.
+    weights: {lightgbm: 0.6, catboost: 0.1, xgboost: 0.3}
+    catboost_params:        # target log1p(demand), prediction expm1
+      loss_function: RMSE
+      eval_metric: RMSE
+      iterations: 1320      # 1,199 best iteration + ~10% margin
+      learning_rate: 0.08
+      depth: 6
+      l2_leaf_reg: 3.0
+      boosting_type: Plain
+      bootstrap_type: Bernoulli
+      subsample: 0.8
+      thread_count: -1
+      verbose: 0
+    xgboost_params:
+      objective: "reg:tweedie"
+      tweedie_variance_power: 1.1
+      learning_rate: 0.05
+      max_depth: 8
+      min_child_weight: 50
+      reg_lambda: 1.0
+      subsample: 0.85
+      colsample_bytree: 0.85
+      tree_method: hist
+    xgboost_rounds: 590     # 532 best iteration + ~10% margin
+  n_estimators: 1160        # LightGBM member: fixed round count (1,059 best iteration from early stopping + ~10% margin)
   params:
     objective: tweedie      # zero-inflated, right-skewed counts (see docs/ARCHITECTURE.md)
     tweedie_variance_power: 1.05

@@ -7,6 +7,7 @@ export interface Health {
   data_through: string | null;
   forecast_horizon_days: number | null;
   data_label?: string | null;
+  model_type?: string | null; model_components?: string[] | null;
   detail: string | null;
 }
 
@@ -47,9 +48,17 @@ export interface ForecastResponse {
 }
 
 export interface Driver { feature: string; label: string; group: string; value: number | null; effect_pct: number }
+export interface ComponentExplanation {
+  model: string; label: string; weight: number; exactness: string; prediction: number; baseline_demand: number;
+  reconstruction_error_pct: number; drivers: Driver[]; other_features_effect_pct: number;
+}
 export interface ExplainResponse {
   store_id: number; date: string; is_open: boolean; baseline_demand: number; model_prediction: number;
   predicted_demand: number; drivers: Driver[]; other_features_effect_pct: number; note: string;
+  /** "ensemble_approximate" (blend-weighted view) or "lightgbm_exact" (single-model bundle). */
+  explanation_scope?: string; explanation_exactness?: string;
+  approximation?: { method: string; weights: Record<string, number>; reconstruction_error_pct: number; note: string } | null;
+  components?: ComponentExplanation[] | null;
 }
 
 export interface BacktestPoint { date: string; actual: number; predicted: number; baseline: number }
@@ -63,6 +72,8 @@ export interface WindowInfo { name: string; cutoff: string; start: string; end: 
 export interface GroupError { group: string; n_open_rows: number; rmsle: number | null; wape: number | null; mae: number | null }
 export interface MetricsResponse {
   generated_at: string;
+  model_label?: string; model_type?: string;
+  members?: Record<string, MetricMap>;
   definitions: Record<string, string>;
   primary_window: WindowInfo;
   model: MetricMap;
@@ -87,12 +98,16 @@ export interface ImportanceItem {
 }
 export interface ImportanceResponse {
   gain: ImportanceItem[]; permutation: ImportanceItem[]; shap: ImportanceItem[];
+  shap_by_model?: Record<string, ImportanceItem[]>; gain_by_model?: Record<string, ImportanceItem[]>;
   meta: Record<string, string | number>;
 }
 export type ImportanceView = "permutation" | "shap" | "gain";
 
 export interface ModelInfo {
   model_version: string; algorithm: string; created_at: string; seed: number; n_estimators: number;
+  model_type?: string; model_type_id?: string; data_label?: string | null;
+  weights?: Record<string, number>;
+  components?: Array<{ name: string; family: string; weight: number; n_trees?: number; library_version?: string; size_bytes?: number }>;
   params: Record<string, number | string>; n_features: number;
   features: Array<{ feature: string; label: string; group: string; group_label: string; description: string }>;
   horizon_days: number; origin_date: string; forecast_window: { start: string; end: string };

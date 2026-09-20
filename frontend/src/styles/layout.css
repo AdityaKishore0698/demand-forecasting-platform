@@ -45,6 +45,7 @@
 .btn.menu-btn { display: none; }
 .content { width: 100%; max-width: 1280px; margin: 0 auto; padding: 26px 28px 56px; }
 .page { display: flex; flex-direction: column; gap: 18px; }
+.page > * { min-width: 0; }       /* let wide tables scroll inside their card instead of stretching the page */
 .page__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 2px; }
 .page__lede { color: var(--text-muted); max-width: 64ch; margin-top: 6px; }
 

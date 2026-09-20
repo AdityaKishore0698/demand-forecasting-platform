@@ -12,11 +12,11 @@ import { fmtPct } from "../lib/format";
 
 const VIEWS: Array<{ value: ImportanceView; label: string; unit: string; blurb: string }> = [
   { value: "permutation", label: "Permutation", unit: "RMSLE increase",
-    blurb: "Shuffle one feature on the hold-out window and measure how much the forecast error grows. Bigger = the model leans on it more." },
+    blurb: "Shuffle one feature on the hold-out window and measure how much the forecast error grows (for the ensemble: on the blended output). Bigger = the model leans on it more." },
   { value: "shap", label: "SHAP", unit: "mean |SHAP| (log scale)",
-    blurb: "Average size of each feature's push on the prediction, using exact TreeSHAP contributions." },
+    blurb: "Average size of each feature's push on the prediction, using TreeSHAP. For the ensemble this is the blend-weighted average of the three models (an approximation); each model's own list is exact." },
   { value: "gain", label: "Gain", unit: "loss reduction",
-    blurb: "How much each feature reduced training loss across all trees in the final model. Can overstate high-cardinality features." },
+    blurb: "How much each feature reduced training loss inside the trees. For the ensemble this covers the LightGBM component only. Can overstate high-cardinality features." },
 ];
 
 const TOP = 15;

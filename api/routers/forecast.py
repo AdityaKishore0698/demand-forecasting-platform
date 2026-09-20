@@ -16,7 +16,7 @@ def forecast(body: ForecastRequest, service: ForecastService = Depends(get_servi
 
 
 @router.get("/explain", response_model=ExplainResponse,
-            summary="Why the model forecast what it did for one store-day (TreeSHAP drivers)")
+            summary="Why the model forecast what it did for one store-day (exact TreeSHAP per model; ensemble view labelled approximate)")
 def explain(
     store_id: int = Query(..., ge=1),
     date: date_type = Query(..., description="A date inside the forecast window"),

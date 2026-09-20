@@ -31,7 +31,7 @@ A condensed record of what was tried while building the model. **The RMSLE figur
 
 **Adopted configuration = v7** (`configs/default.yaml`). Re-running the refactored, modular pipeline in this repository reproduces the primary-window RMSLE of **0.09476** and the best baseline's **0.23307** (verified when the code was restructured).
 
-## Ensembles (offline only, not served)
+## Ensembles (pre-correction numbers; the final ensemble was re-evaluated under the corrected methodology)
 
 | Combination | RMSLE |
 |---|---|
@@ -41,11 +41,11 @@ A condensed record of what was tried while building the model. **The RMSLE figur
 | Geometric-mean or ridge-stacked blends | 0.0941 |
 | 5-seed bagging of one LightGBM | 0.0971 vs 0.0970 single (no gain) |
 
-The best blend improves RMSLE by ~0.6% over the single model. The served model is the single LightGBM: three runtimes, three sets of dependencies and slower training were not worth a gain that small (and measured on the same window used to select the blend weights).
+The best blend improved RMSLE by ~0.7% over the single model on the window used to select the weights. **The 0.6 / 0.1 / 0.3 ensemble was then re-evaluated under the corrected methodology on three windows and adopted as the deployed model** — see [ENSEMBLE_CORRECTED_EVALUATION.md](ENSEMBLE_CORRECTED_EVALUATION.md) for the corrected numbers, the tuning caveat and the measured cost.
 
 ## Post-hoc calibration (not adopted)
 
-The model under-forecasts slightly and consistently: the ratio of total actual to total predicted demand was between 1.012 and 1.021 on all three windows (the served model's reported bias on the primary window is −1.2%). A global 1.01× scale factor improved the offline blend from 0.09414 to 0.09371 on the primary window. It was **not adopted**: the gain is ~0.5% on the same window used to choose the factor, it patches a symptom (a level bias, plausibly from growth not captured by any feature) rather than a cause, and a calibration tuned this way cannot be confirmed without independent data. Candidate causes (trend features) were tested separately and made validation worse (see v11).
+The model under-forecasts slightly and consistently: the ratio of total actual to total predicted demand was between 1.012 and 1.021 on all three windows (the reported bias on the primary window is −1.2%). A global 1.01× scale factor improved the offline blend from 0.09414 to 0.09371 on the primary window. It was **not adopted**: the gain is ~0.5% on the same window used to choose the factor, it patches a symptom (a level bias, plausibly from growth not captured by any feature) rather than a cause, and a calibration tuned this way cannot be confirmed without independent data. Candidate causes (trend features) were tested separately and made validation worse (see v11).
 
 ## Lessons
 

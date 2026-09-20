@@ -1,6 +1,6 @@
 # Deployment checklist
 
-**Status: not deployed.** Nothing here has been run against a cloud provider. What *has* been verified locally: the Docker image builds, starts, loads its model and returns the same forecast as the local API; the frontend production build passes type-check and unit tests. Only add live URLs to the README after you have completed the steps below and checked them.
+**Status: the ensemble build has been verified locally but not redeployed.** Verified locally: the Docker image builds (≈1.31 GB on disk), the container answers `/health` 1.8 s after start with the 3-model ensemble loaded (≈254 MiB idle), every endpoint responds correctly, and the frontend passes its browser checks against that container. Render deploys from the GitHub repository, so a redeploy needs the new commit pushed, and the Vercel frontend needs redeploying to pick up the ensemble wording. **Compatibility with your Render instance's memory/CPU limits has not been verified** — check the instance limits in the dashboard against the measurements below before switching.
 
 ## Architecture (two pieces, nothing else)
 
@@ -19,7 +19,7 @@ No database, cache, queue, auth or Kubernetes. The API is read-only and stateles
 
 ## 0. Decide what the public deployment serves — do this first
 
-The Docker image contains **only the synthetic demo bundle** (`artifacts/demo/`). That is the safe default for a public demo: the app shows the banner "Demo mode — using synthetic data" and every number is illustrative.
+The Docker image contains **only synthetic bundles**: `artifacts/demo/` (the final 3-model ensemble, ≈22 MB) and `artifacts/demo_single/` (the previous single-LightGBM bundle, kept as a rollback target). That is the safe default for a public demo: the app shows the banner "Demo mode — using synthetic data" and every number is illustrative.
 
 Do **not** put a bundle trained on the original dataset into a *public* deployment unless you have verified that its terms allow it: the API's `/historical-data` endpoint returns the underlying daily records, and `/backtest` returns real actuals. If you want a private deployment on your own data, build a private image or mount the bundle at runtime and set `ARTIFACT_DIR`; keep it out of git and out of any public registry.
 
@@ -33,14 +33,14 @@ docker run --rm -p 8000:8000 -e CORS_ORIGINS=http://localhost:5173 demand-foreca
 curl http://localhost:8000/health             # expect "model_loaded": true, "data_label": "synthetic-demo"
 ```
 
-Render (web service): New → Web Service → connect the GitHub repo → Environment **Docker** → Dockerfile path `./Dockerfile`; Health check path `/health`; set the environment variables below; deploy. Image ≈ 670 MB (Python 3.11-slim + pandas/numpy/LightGBM), which is normal for this stack.
+Render (web service): New → Web Service → connect the GitHub repo → Environment **Docker** → Dockerfile path `./Dockerfile`; Health check path `/health`; set the environment variables below; deploy. Image ≈ 1.31 GB on disk (Python 3.11-slim + pandas/numpy/LightGBM/CatBoost/XGBoost; CatBoost and its dependencies add ≈ 450 MB of packages). Measured locally in Docker with the demo bundle: ready in 1.8 s, ≈ 254 MiB after start-up, ≈ 261 MiB after 60 forecasts, ≈ 19 ms for an uncached 42-day forecast. Models trained on the real dataset are larger (whole-API process memory measured locally: 548 MB single LightGBM vs 710 MB ensemble, both including the 970k-row history), but those are not deployed publicly.
 
 ## 2. Environment variables (API)
 
 | Variable | Value | Notes |
 |---|---|---|
 | `CORS_ORIGINS` | your frontend URL(s), comma-separated, e.g. `https://your-app.vercel.app` | Required in production. Wildcards are not used. Add the URL *after* the frontend is deployed, then redeploy the API. |
-| `ARTIFACT_DIR` | `/app/artifacts/demo` (already the image default) | Change only to serve a different bundle. |
+| `ARTIFACT_DIR` | `/app/artifacts/demo` (already the image default) | **Rollback:** set to `/app/artifacts/demo_single` to serve the previous single-LightGBM bundle without rebuilding the image. Also used to serve a different bundle. |
 | `LOG_LEVEL` | `INFO` | Optional. |
 | `PORT` | injected by the host | The container command honours it. |
 
@@ -50,7 +50,8 @@ Frontend (build-time only): `VITE_API_URL=https://<your-api-host>` — no traili
 
 | Bundle | In git? | How it is produced |
 |---|---|---|
-| `artifacts/demo/` (synthetic) | yes, ≈1 MB | `make demo` (deterministic; the committed copy was made with `configs/demo.yaml`) |
+| `artifacts/demo/` (synthetic ensemble) | yes, ≈22 MB | `make demo` (≈15 min; the committed copy was made with `configs/demo.yaml`; the three model files are hash-pinned in `model_card.json`) |
+| `artifacts/demo_single/` (synthetic single LightGBM) | yes, ≈1 MB | the previous demo bundle, kept for rollback |
 | `artifacts/` (your data) | **no** (git-ignored) | `make train` after placing your data in `data/raw/` |
 
 To refresh the committed demo bundle: `make demo`, then review `git status` and commit yourself.

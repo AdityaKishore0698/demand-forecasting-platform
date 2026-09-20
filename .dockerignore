@@ -12,6 +12,7 @@ notebooks
 *.md
 artifacts/*
 !artifacts/demo
+!artifacts/demo_single
 artifacts/demo/**/.DS_Store
 .venv
 venv

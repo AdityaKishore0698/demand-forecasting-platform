@@ -43,7 +43,15 @@ Each store's history is reindexed to the full daily calendar so `shift(k)` and r
 
 ## 4. Model
 
-**LightGBM gradient-boosted trees, Tweedie objective (variance power 1.05).** Parameters live in `configs/default.yaml`: 1,160 trees, learning rate 0.05, 127 leaves, `min_data_in_leaf` 200, L2 1.0, feature/bagging fraction 0.85.
+**A 3-model boosting ensemble: `forecast = 0.6·LightGBM + 0.1·CatBoost + 0.3·XGBoost`** (raw demand space; closed days then forced to 0). Every parameter lives in `configs/default.yaml` (`model.ensemble`), asserted equal to the evaluated recipes by a test; nothing was re-tuned for deployment.
+
+| Member | Objective / target | Rounds | Key parameters |
+|---|---|---|---|
+| LightGBM | Tweedie p = 1.05, raw demand | 1,160 | lr 0.05, 127 leaves, `min_data_in_leaf` 200, L2 1.0, feature/bagging fraction 0.85 |
+| CatBoost | RMSE on `log1p(demand)`, prediction `expm1` | 1,320 | lr 0.08, depth 6, l2 3.0, Plain boosting, Bernoulli subsample 0.8 |
+| XGBoost | `reg:tweedie` p = 1.1, raw demand | 590 | lr 0.05, depth 8, `min_child_weight` 50, subsample/colsample 0.85, `hist` |
+
+All three share the same 44 features in the same order. The single-LightGBM model remains supported (`model.type: lightgbm_single`) as the rollback path. Evidence for the choice: [ENSEMBLE_CORRECTED_EVALUATION.md](ENSEMBLE_CORRECTED_EVALUATION.md).
 
 *Why trees?* Mixed numeric/categorical inputs, strong interactions (weekday × promotion × store), missing values, no scaling, fast on 5M rows, and exact TreeSHAP explanations. *Why not a linear model?* It cannot capture the store × weekday × promotion interactions or zero-inflation without extensive manual feature crossing. *Why not deep learning?* No evidence it would help on tabular data of this size, and it would cost interpretability and training time; the project deliberately avoids it.
 
@@ -51,7 +59,7 @@ Each store's history is reindexed to the full daily calendar so `shift(k)` and r
 
 *Closed-day rule.* `IsOpen` is known in advance and demand is always 0 when closed (verified in the data), so the forecast is forced to 0 on closed days. It is applied consistently in evaluation, the API and the dashboard.
 
-*Trees vs early stopping.* The number of trees (1,160) is fixed in the config: the best iteration from early stopping on the primary window (1,059) plus ~10% margin because the final model sees more data. The training function never uses a validation set, so it cannot silently peek.
+*Round counts.* Fixed in the config: each is the best early-stopping iteration on the primary window (LightGBM 1,059, CatBoost 1,199, XGBoost 532) plus ~10% margin because the final model sees more data. The training functions never use a validation set, so they cannot silently peek — but the primary window therefore informed these choices (and the blend weights), which is why it is a validation result, not a test result.
 
 ## 5. Validation design
 
@@ -67,24 +75,25 @@ Metrics (`src/evaluation/metrics.py`): **RMSLE** on all rows (model-selection me
 
 ## 6. Interpretability
 
-- **Permutation importance** — increase in hold-out RMSLE when a feature is shuffled (backtest model, 15k rows × 3 repeats).
-- **SHAP** — exact TreeSHAP via LightGBM `pred_contrib`; contributions are on the log scale, shown as multiplicative effects (`exp(c) − 1`).
-- **Gain** — split gain in the final model (biased toward high-cardinality features, so shown as a third opinion).
-- **Per-forecast drivers** (`/explain`) — the top SHAP contributions for one store-day, plus "all other features" combined, relative to the model's starting point (its typical output over all training days).
+- **Permutation importance** — increase in hold-out RMSLE when a feature is shuffled, measured on the **ensemble's blended output** (backtest ensemble, 15k rows × 3 repeats): exact for the deployed model.
+- **SHAP** — exact TreeSHAP per model (LightGBM `pred_contrib`, XGBoost `pred_contribs`, CatBoost `ShapValues`); contributions are additive in each model's own space (log link for LightGBM/XGBoost, log1p target for CatBoost), shown as multiplicative effects (`exp(c) − 1`). The ensemble-level list is the blend-weighted average of the three and is labelled **approximate**; each model's own list is exact.
+- **Gain** — split gain; units differ across libraries, so the headline list is the LightGBM component only (labelled as such) and per-model lists are provided separately.
+- **Per-forecast drivers** (`/explain`) — exact per-model drivers plus a blend-weighted ensemble view marked `ensemble_approximate`, with the reconstruction error of that approximation returned per request. The blended forecast itself is exact; only its attribution is approximate.
 
-Top features by permutation importance: store open that day (62%), store's typical demand on that weekday (29%), regional holiday (3.9%), promotion running (2.3%). Recent-demand lags rank lower, plausibly because the store×weekday baseline already carries much of the same information (not tested in isolation). Importance ≠ causation, and correlated features share credit.
+Top features by permutation importance on the earlier single-LightGBM model: store open that day (62%), store's typical demand on that weekday (29%), regional holiday (3.9%), promotion running (2.3%) (the ensemble's own ranking is on the Feature Insights page). Recent-demand lags rank lower, plausibly because the store×weekday baseline already carries much of the same information (not tested in isolation). Importance ≠ causation, and correlated features share credit.
 
 ## 7. Serving design
 
 ```
 artifacts/<bundle>/        # <bundle> = demo (committed, synthetic) or the repo-level artifacts/ (yours, git-ignored)
-  model/     lgbm_tweedie.txt.gz, model_card.json
+  model/     lightgbm.txt.gz, catboost.cbm, xgboost.ubj, model_card.json     (single-LightGBM bundles: lgbm_tweedie.txt.gz)
   serving/   history.csv.gz, origin_features.csv.gz, hubweekday_features.csv.gz, schedule.csv.gz, hub_metadata.csv
   reports/   metrics.json, feature_importance.json, backtest_predictions.csv.gz, dataset_summary.json
 ```
 
 The API loads `ARTIFACT_DIR` if set, else `artifacts/` when it holds a trained model, else the committed synthetic demo bundle `artifacts/demo/`. The pipeline records a provenance tag (`data.label` in the config) in `dataset_summary.json` and the model card; for the demo bundle it is `synthetic-demo`, which `/health` returns and the dashboard shows as a banner. `serving/history.csv.gz` is a copy of the training records, and `reports/backtest_predictions.csv.gz` holds actuals, so a bundle is only as publishable as the data it was trained on.
 
+- The API never trains and never loads a model inside a request: the three model files are loaded once at start-up and verified against the SHA-256 hashes and blend weights in `model_card.json` (a mismatch or missing file gives a degraded `/health`, not a crash).
 - The API never trains. `ForecastService.load()` reads the artifacts once at start-up (FastAPI lifespan).
 - The forecast origin is fixed at the last known day, so origin features are **pre-computed and stored**; per request the service only rebuilds the small per-store feature rows with the *same* `build_supervised_dataset` used in training — this is what prevents train/serve skew (`tests/test_service.py` asserts equality with batch features).
 - Categorical levels are pinned from training (`prepare_matrix`), so scoring one store alone equals scoring it inside the full frame (tested).
@@ -99,7 +108,7 @@ React 18 + TypeScript (strict) on Vite. Data layer: a thin typed `fetch` client 
 
 | Idea | Outcome |
 |---|---|
-| CatBoost / XGBoost, blended | Best offline blend RMSLE 0.09411 vs 0.09476 single (0.7% RMSLE, 0.03 pp WAPE), within seed noise. Not served: 3 runtimes for a marginal gain (see ML_AUDIT.md) |
+| LightGBM + CatBoost + XGBoost blend (0.6/0.1/0.3) | **Adopted.** Corrected evaluation: lower error than LightGBM alone in all three windows (RMSLE −0.7 % to −1.9 %, WAPE −0.04 to −0.15 pp), at higher training, memory and dependency cost — see ENSEMBLE_CORRECTED_EVALUATION.md |
 | log1p target + RMSE | Worse than Tweedie (0.09695 vs 0.09474) |
 | Extra store × promo / store × school baselines | Worse (0.09864–0.10006 vs 0.09695) — overfit |
 | Momentum ratio feature (rollmean7 / rollmean28) | Worse (0.115 vs 0.097), three variants tried |
@@ -107,7 +116,7 @@ React 18 + TypeScript (strict) on Vite. Data layer: a thin typed `fetch` client 
 | Cross-store network-wide demand features | Worse (0.09686 vs 0.09474) on the primary window |
 | 7-day schedule-density window | Worse (0.09705 vs 0.09474) |
 
-Details in [EXPERIMENTS.md](EXPERIMENTS.md) and the ensemble analysis in [ML_AUDIT.md](ML_AUDIT.md). All are single-window validation numbers.
+Details in [EXPERIMENTS.md](EXPERIMENTS.md) and [ENSEMBLE_CORRECTED_EVALUATION.md](ENSEMBLE_CORRECTED_EVALUATION.md). The rejected-idea rows are single-window, pre-correction validation numbers.
 
 ## 10. Schedule-horizon boundary (resolved) and production hardening not yet done
 

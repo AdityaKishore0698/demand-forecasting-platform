@@ -1,7 +1,7 @@
 import { Info } from "lucide-react";
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
-import { useBacktest, useMetrics } from "../api/hooks";
+import { useBacktest, useHealth, useMetrics } from "../api/hooks";
 import type { MetricMap, MetricsResponse } from "../api/types";
 import { ActualVsPredictedChart } from "../components/charts/ActualVsPredictedChart";
 import { ErrorHistogram } from "../components/charts/ErrorHistogram";
@@ -14,6 +14,7 @@ import { Segmented } from "../components/ui/Segmented";
 import { ChartSkeleton, ErrorState, QueryBoundary, Skeleton } from "../components/ui/States";
 import { Switch } from "../components/ui/Switch";
 import { useChartColors } from "../lib/chart";
+import { REPORTED_PRIMARY, REPORTED_WINDOWS } from "../lib/reportedResults";
 import { fmtDateYear, fmtInt, fmtPct, fmtSignedPct } from "../lib/format";
 
 type Scope = "all" | "store";
@@ -66,6 +67,7 @@ export default function ModelPerformance() {
   const [showBase, setShowBase] = useState(true);
   const [bd, setBd] = useState<Breakdown>("by_horizon");
   const metrics = useMetrics();
+  const demo = useHealth().data?.data_label === "synthetic-demo";
   const backtest = useBacktest(scope === "store" ? storeId : null);
   const bdInfo = BREAKDOWNS.find((x) => x.value === bd)!;
 
@@ -79,9 +81,39 @@ export default function ModelPerformance() {
               How well the model forecast a period it had never seen: it was trained only on data before that period, then asked to
               predict the next 42 days.
             </p>
+            <p style={{ marginTop: 8 }}>
+              {demo
+                ? <span className="chip chip--warn" style={{ whiteSpace: "normal", borderRadius: 12, lineHeight: 1.35, padding: "4px 10px" }}>Synthetic demo — the numbers below come from generated data and a model trained on it</span>
+                : <span className="chip chip--accent" style={{ whiteSpace: "normal", borderRadius: 12, lineHeight: 1.35, padding: "4px 10px" }}>Offline validation on the dataset the model was trained on — not live production accuracy</span>}
+            </p>
           </div>
         </div>
       </Reveal>
+
+      {demo && (
+        <Reveal delay={0.02}>
+          <Card title="Reported offline validation on the real dataset"
+            subtitle="Rossmann Store Sales (not included in this repository). Reported figures, not computed by this demo, and not live production accuracy.">
+            <div className="table-wrap" style={{ maxHeight: "none", borderTop: 0 }}>
+              <table className="table">
+                <thead><tr><th>Window (42 days)</th><th className="r">Ensemble RMSLE</th><th className="r">Ensemble WAPE</th><th className="r">LightGBM alone WAPE</th><th className="r">Best simple baseline WAPE</th></tr></thead>
+                <tbody>
+                  {REPORTED_WINDOWS.map((w) => (
+                    <tr key={w.window}>
+                      <td>{w.window}</td><td className="r num"><b>{w.ensemble.rmsle.toFixed(4)}</b></td><td className="r num"><b>{fmtPct(w.ensemble.wape, 3)}</b></td>
+                      <td className="r num">{fmtPct(w.lightgbm.wape, 3)}</td><td className="r num">{fmtPct(w.baselineWape)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="card__sub" style={{ marginTop: 8 }}>
+              Primary window: MAE {fmtInt(REPORTED_PRIMARY.mae)}, RMSE {fmtInt(REPORTED_PRIMARY.rmse)} orders per store-day. The primary window also informed the choice of round counts and
+              blend weights, so it is a validation result, not an untouched test. See the README for the full comparison.
+            </p>
+          </Card>
+        </Reveal>
+      )}
 
       <QueryBoundary query={metrics} skeleton={<div className="grid grid--3">{Array.from({ length: 6 }, (_, i) => <div key={i} className="card" style={{ padding: 16 }}><Skeleton h={62} r={10} /></div>)}</div>}>
         {(m) => {
@@ -94,13 +126,34 @@ export default function ModelPerformance() {
                   <Info aria-hidden />
                   <div>
                     <b>Hold-out window: {fmtDateYear(w.start)} → {fmtDateYear(w.end)}</b> ({w.horizon} days, {fmtInt(m.model.n_open_rows)} open store-days).
-                    Metrics are on open days unless noted. Comparison baseline: <b>{m.baselines[m.best_baseline].label}</b>, the strongest simple
+                    These are validation metrics on hold-out windows, not live production accuracy. Metrics are on open days unless noted. Comparison baseline: <b>{m.baselines[m.best_baseline].label}</b>, the strongest simple
                     method on this window. The model cut WAPE by <b>{m.improvement_vs_best_baseline_pct.wape?.toFixed(0)}%</b> relative to it.
                   </div>
                 </div>
               </Reveal>
 
               <Reveal delay={0.06}><MetricGrid m={m} s={m.model} /></Reveal>
+
+              {m.members && Object.keys(m.members).length > 0 && (
+                <Reveal delay={0.07}>
+                  <Card title="Ensemble members" subtitle="Each model scored on exactly the same hold-out rows; the ensemble is their fixed-weight blend (weights set in advance, not tuned on these numbers)">
+                    <div className="table-wrap" style={{ maxHeight: "none", borderTop: 0 }}>
+                      <table className="table">
+                        <thead><tr><th>Model</th><th className="r">RMSLE</th><th className="r">WAPE</th><th className="r">MAE</th><th className="r">RMSE</th></tr></thead>
+                        <tbody>
+                          {[...Object.entries(m.members), ["ensemble", m.model] as [string, MetricMap]].map(([name, v]) => (
+                            <tr key={name} className={name === "ensemble" ? "is-selected" : ""}>
+                              <td><b>{name === "ensemble" ? "Ensemble" : name === "lightgbm" ? "LightGBM" : name === "catboost" ? "CatBoost" : name === "xgboost" ? "XGBoost" : name}</b></td>
+                              <td className="r num">{v.rmsle?.toFixed(4)}</td><td className="r num">{fmtPct(v.wape)}</td>
+                              <td className="r num">{fmtInt(v.mae)}</td><td className="r num">{fmtInt(v.rmse)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </Card>
+                </Reveal>
+              )}
 
               <Reveal delay={0.09}>
                 <Card title="Actual vs predicted"
@@ -153,7 +206,7 @@ export default function ModelPerformance() {
                   {(() => {
                     const rows = [
                       ...Object.entries(m.baselines).map(([k, v]) => ({ k, label: v.label, v: v.wape ?? 0, model: false })),
-                      { k: "model", label: "LightGBM model", v: m.model.wape ?? 0, model: true },
+                      { k: "model", label: m.model_label ?? "Model", v: m.model.wape ?? 0, model: true },
                     ].sort((a, b) => b.v - a.v);
                     const max = Math.max(...rows.map((r) => r.v));
                     return rows.map((r) => (

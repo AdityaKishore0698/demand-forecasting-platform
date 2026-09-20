@@ -14,7 +14,7 @@ origin and compare with what actually happened.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, List
 
 import numpy as np
@@ -26,7 +26,8 @@ from src.data.schema import DATE_COL, ENTITY_COL, TARGET_COL
 from src.evaluation.metrics import apply_closed_hub_rule, regression_report, rmsle
 from src.features.builder import FeatureTables
 from src.models.baselines import baseline_predictions
-from src.models.lightgbm_model import TrainedModel, predict_raw, train_model
+from src.models.dispatch import AnyModel, fit as fit_model, is_ensemble, predict as predict_demand
+from src.models.ensemble import predict_members
 
 
 class LeakageError(AssertionError):
@@ -86,11 +87,12 @@ def assert_no_temporal_leakage(train_df: pd.DataFrame, window: BacktestWindow) -
 @dataclass
 class BacktestResult:
     window: BacktestWindow
-    model: TrainedModel
+    model: AnyModel
     rows: pd.DataFrame              # window rows + prediction + baselines + actual
     metrics: Dict[str, float]
     baseline_metrics: Dict[str, Dict[str, float]]
     n_train_rows: int
+    member_metrics: Dict[str, Dict[str, float]] = field(default_factory=dict)   # ensemble members, same rows
 
 
 def run_backtest_window(window: BacktestWindow, tables: FeatureTables, cfg: Config,
@@ -101,7 +103,7 @@ def run_backtest_window(window: BacktestWindow, tables: FeatureTables, cfg: Conf
     train_df = tables.make_dataset(origins, horizons, require_label=True)
     assert_no_temporal_leakage(train_df, window)
 
-    model = train_model(train_df, cfg)
+    model = fit_model(train_df, cfg)
     n_train = len(train_df)
 
     train_sample = None
@@ -111,7 +113,13 @@ def run_backtest_window(window: BacktestWindow, tables: FeatureTables, cfg: Conf
 
     rows = tables.make_dataset([window.cutoff], horizons, require_label=True)
     rows["actual"] = rows[TARGET_COL].to_numpy(dtype=float)
-    rows["predicted"] = apply_closed_hub_rule(predict_raw(model, rows), rows["IsOpen"])
+    rows["predicted"] = apply_closed_hub_rule(predict_demand(model, rows), rows["IsOpen"])
+    member_metrics: Dict[str, Dict[str, float]] = {}
+    if is_ensemble(model):
+        # per-member scores on the very same rows (members are predicted once more; cheap relative to fitting)
+        for name, p in predict_members(model, rows).items():
+            member_metrics[name] = regression_report(rows["actual"], apply_closed_hub_rule(p, rows["IsOpen"]), rows["IsOpen"])
+            rows[f"pred_{name}"] = apply_closed_hub_rule(p, rows["IsOpen"])
 
     baselines = baseline_predictions(rows, tables.target_panel, window.cutoff)
     for name, pred in baselines.items():
@@ -120,11 +128,11 @@ def run_backtest_window(window: BacktestWindow, tables: FeatureTables, cfg: Conf
     is_open = rows["IsOpen"].to_numpy()
     metrics = regression_report(rows["actual"], rows["predicted"], is_open)
     base_metrics = {n: regression_report(rows["actual"], p, is_open) for n, p in baselines.items()}
-    result = BacktestResult(window, model, rows, metrics, base_metrics, n_train)
+    result = BacktestResult(window, model, rows, metrics, base_metrics, n_train, member_metrics)
     return result, train_sample
 
 
-def training_performance(model: TrainedModel, train_sample: pd.DataFrame) -> Dict[str, float]:
+def training_performance(model: AnyModel, train_sample: pd.DataFrame) -> Dict[str, float]:
     """In-sample accuracy on a random sample of training rows (for the train/val gap)."""
-    pred = apply_closed_hub_rule(predict_raw(model, train_sample), train_sample["IsOpen"])
+    pred = apply_closed_hub_rule(predict_demand(model, train_sample), train_sample["IsOpen"])
     return regression_report(train_sample[TARGET_COL], pred, train_sample["IsOpen"])

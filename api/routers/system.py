@@ -16,6 +16,8 @@ def health(request: Request) -> HealthResponse:
     return HealthResponse(
         status="ok", model_loaded=True, model_version=service.model_version,
         data_through=service.origin.date(), forecast_horizon_days=service.horizon_days, data_label=service.data_label,
+        model_type=service.model_type_label,
+        model_components=[c["family"] for c in service.card["components"]] if "components" in service.card else ["LightGBM"],
     )
 
 

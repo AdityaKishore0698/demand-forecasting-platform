@@ -7,7 +7,7 @@ import { Skeleton } from "../components/ui/States";
 import { fmtDateYear, fmtInt, fmtPct } from "../lib/format";
 
 const STACK: Array<{ title: string; items: string[] }> = [
-  { title: "Modelling", items: ["Python", "pandas / NumPy", "LightGBM (Tweedie objective)", "TreeSHAP + permutation importance"] },
+  { title: "Modelling", items: ["Python", "pandas / NumPy", "LightGBM + CatBoost + XGBoost", "TreeSHAP + permutation importance"] },
   { title: "API", items: ["FastAPI", "Pydantic v2", "Uvicorn", "Model and data loaded once at start-up"] },
   { title: "Frontend", items: ["React 18 + TypeScript", "Vite", "Recharts", "TanStack Query", "Framer Motion"] },
   { title: "Quality", items: ["pytest (features, leakage, API)", "Vitest (formatting utilities)", "Central YAML config, fixed seed"] },
@@ -16,7 +16,7 @@ const STACK: Array<{ title: string; items: string[] }> = [
 const FLOW = [
   ["Raw history", "Daily orders per store plus known schedule (open, promotion, holidays)"],
   ["Features", "Lags, rolling means, weekday baseline — frozen at the last known day"],
-  ["Model", "One LightGBM model predicts step 1…42 directly"],
+  ["Model", "Three boosted-tree models, blended, predict step 1…42 directly"],
   ["Validation", "Chronological hold-outs, compared to simple baselines"],
   ["API + dashboard", "FastAPI serves forecasts; React visualises them"],
 ];
@@ -99,10 +99,22 @@ export default function About() {
         <Section delay={0.1} title="The model">
           {!m ? <Skeleton h={120} r={10} /> : (
             <>
-              <p>
-                A <strong>LightGBM</strong> gradient-boosted tree model ({m.n_estimators} trees, {m.n_features} features) with a
-                <strong> Tweedie</strong> loss, which suits non-negative, right-skewed counts that include many zeros.
-              </p>
+              {m.model_type_id === "boosting_ensemble" && m.weights && m.components ? (
+                <p>
+                  A blend of <strong>three gradient-boosted tree models</strong> ({m.n_features} features):{" "}
+                  {m.components.map((c, i) => (
+                    <span key={c.name}>{i > 0 && ", "}<strong>{c.family}</strong> ({(c.weight * 100).toFixed(0)}%{c.n_trees ? `, ${fmtInt(c.n_trees)} trees` : ""})</span>
+                  ))}
+                  , combined as a weighted sum of their demand forecasts. LightGBM and XGBoost use a <strong>Tweedie</strong> loss, which suits
+                  non-negative, right-skewed counts with many zeros; CatBoost learns log(1 + demand). The ensemble adds model footprint and inference
+                  work compared with a single model, in exchange for a small validation-error reduction.
+                </p>
+              ) : (
+                <p>
+                  A <strong>LightGBM</strong> gradient-boosted tree model ({m.n_estimators} trees, {m.n_features} features) with a
+                  <strong> Tweedie</strong> loss, which suits non-negative, right-skewed counts that include many zeros.
+                </p>
+              )}
               <p>
                 It forecasts <strong>directly</strong>: all history features are computed once at the last known day, and the number of days
                 ahead is itself a feature. That avoids compounding errors from feeding predictions back in as inputs. Stores scheduled to be
@@ -152,8 +164,9 @@ export default function About() {
             <li>The most recent hold-out window was also used to tune the model, so it is a validation figure, not a fully untouched test.</li>
             <li>Forecasts use only the schedule known in advance (open days, promotions, holidays). Weather, competitor actions and price changes are not modelled.</li>
             <li>Forecasts are point estimates. There are no prediction intervals.</li>
+            <li>The ensemble's blended explanation is an approximation (each model's own TreeSHAP is exact); the ensemble adds model footprint and inference work compared with a single model.</li>
             <li>Horizon is capped at 42 days — the length of the known schedule. Longer horizons would require inventing inputs.</li>
-            <li>One global model serves every store. Stores with short or gapped history rely more on the weekday baseline.</li>
+            <li>One global model (the ensemble) serves every store. Stores with short or gapped history rely more on the weekday baseline.</li>
             <li>No live drift monitoring or automated retraining is implemented.</li>
           </ul>
           <div className="callout callout--warn" style={{ marginTop: 14 }}>

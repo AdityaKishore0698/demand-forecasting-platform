@@ -27,6 +27,15 @@ class ArtifactPaths:
     def model_file(self) -> Path: return self.root / "model" / "lgbm_tweedie.txt.gz"
     @property
     def model_card(self) -> Path: return self.root / "model" / "model_card.json"
+    @property
+    def model_dir(self) -> Path: return self.root / "model"
+    # ensemble members (model_type == "boosting_ensemble")
+    @property
+    def lightgbm_file(self) -> Path: return self.root / "model" / "lightgbm.txt.gz"
+    @property
+    def catboost_file(self) -> Path: return self.root / "model" / "catboost.cbm"
+    @property
+    def xgboost_file(self) -> Path: return self.root / "model" / "xgboost.ubj"
 
     # serving/  (compact snapshot needed to build features for a forecast on request)
     @property
@@ -50,12 +59,14 @@ class ArtifactPaths:
     @property
     def dataset_summary(self) -> Path: return self.root / "reports" / "dataset_summary.json"
 
-    def required(self) -> List[Path]:
-        return [
-            self.model_file, self.model_card, self.hub_metadata, self.history,
+    def required(self, model_type: str = "lightgbm_single") -> List[Path]:
+        model_files = ([self.lightgbm_file, self.catboost_file, self.xgboost_file]
+                       if model_type == "boosting_ensemble" else [self.model_file])
+        return model_files + [
+            self.model_card, self.hub_metadata, self.history,
             self.origin_features, self.hubweekday_features, self.schedule, self.metrics,
             self.backtest_predictions, self.importance, self.dataset_summary,
         ]
 
-    def missing(self) -> List[Path]:
-        return [p for p in self.required() if not p.exists()]
+    def missing(self, model_type: str = "lightgbm_single") -> List[Path]:
+        return [p for p in self.required(model_type) if not p.exists()]

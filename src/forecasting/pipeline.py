@@ -11,6 +11,7 @@ artifacts written here and never trains.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import logging
 import time
 from datetime import datetime, timezone
@@ -31,7 +32,9 @@ from src.evaluation.interpretability import build_importance_report
 from src.features.builder import build_feature_tables
 from src.forecasting.artifacts import ArtifactPaths
 from src.models.baselines import BASELINE_LABELS
-from src.models.lightgbm_model import predict_raw, save_model, train_model
+from src.models.dispatch import fit as fit_model, is_ensemble, model_type_id, predict as predict_demand
+from src.models.ensemble import HUMAN_NAME, MEMBERS, TARGET_TRANSFORM, save_ensemble
+from src.models.lightgbm_model import save_model
 from src.utils.io import short_hash, write_json
 from src.utils.seed import set_global_seed
 
@@ -90,6 +93,7 @@ def run_pipeline(raw: RawData, cfg: Config, artifact_dir: Optional[Path] = None)
             **w.to_dict(),
             "n_train_rows": res.n_train_rows,
             "model": res.metrics,
+            "members": res.member_metrics,
             "best_baseline": best,
             "best_baseline_metrics": res.baseline_metrics[best],
         })
@@ -121,13 +125,13 @@ def run_pipeline(raw: RawData, cfg: Config, artifact_dir: Optional[Path] = None)
     final_train = tables.make_dataset(final_origins, range(1, horizon + 1), require_label=True)
     if final_train[DATE_COL].max() > raw.train_max:
         raise AssertionError("final training targets extend past the last known day")
-    final_model = train_model(final_train, cfg)
+    final_model = fit_model(final_train, cfg)
     n_final_rows, n_final_origins = len(final_train), len(final_origins)
     del final_train
     logger.info("Final model trained on %d rows (%d origins) [%.0fs]", n_final_rows, n_final_origins, time.time() - t1)
 
     forecast_rows = tables.make_dataset([raw.train_max], range(1, horizon + 1), require_label=False)
-    preds = predict_raw(final_model, forecast_rows)
+    preds = predict_demand(final_model, forecast_rows)
     logger.info("Sanity forecast: %d rows, mean %.0f", len(preds), float(np.mean(preds)))
 
     # ---- 4) interpretation ---------------------------------------------------------
@@ -136,7 +140,11 @@ def run_pipeline(raw: RawData, cfg: Config, artifact_dir: Optional[Path] = None)
     logger.info("Importance computed [%.0fs]", time.time() - t1)
 
     # ---- 5) write artifacts ------------------------------------------------------------
-    save_model(final_model, paths.model_file)
+    component_files = None
+    if is_ensemble(final_model):
+        component_files = save_ensemble(final_model, paths.model_dir)          # lightgbm.txt.gz, catboost.cbm, xgboost.ubj
+    else:
+        save_model(final_model, paths.model_file)
 
     paths.hub_metadata.parent.mkdir(parents=True, exist_ok=True)
     raw.hub_meta.to_csv(paths.hub_metadata, index=False)
@@ -158,6 +166,18 @@ def run_pipeline(raw: RawData, cfg: Config, artifact_dir: Optional[Path] = None)
     bt.to_csv(paths.backtest_predictions, index=False, compression=GZIP)
 
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    trained_on = "all three models (LightGBM, CatBoost, XGBoost)" if is_ensemble(final_model) else "the model"
+    validation_notes = [
+        "Each window trains %s only on data whose TARGET dates precede the window, then forecasts the "
+        "next %d days from the window's last known day." % (trained_on, horizon),
+        "Next-day schedule flags are blanked on the last forecast day in training and validation alike, "
+        "matching what the API can know (the schedule is published %d days ahead)." % horizon,
+        "The round counts%s were chosen on the primary window under an earlier methodology, "
+        "so it is a validation set, not a pristine test set. Earlier windows are robustness checks."
+        % (" and blend weights" if is_ensemble(final_model) else ""),
+        "The deployed model is retrained on all history; its future accuracy cannot be measured "
+        "because actuals for the forecast window are not part of the dataset.",
+    ]
     metrics = {
         "generated_at": now,
         "definitions": METRIC_DEFINITIONS,
@@ -170,27 +190,47 @@ def run_pipeline(raw: RawData, cfg: Config, artifact_dir: Optional[Path] = None)
         "breakdowns": breakdowns,
         "error_distribution": err_dist,
         "windows": window_summaries,
-        "validation_notes": [
-            "Each window trains only on data whose TARGET dates precede the window, then forecasts the "
-            "next %d days from the window's last known day." % horizon,
-            "The primary window was also used to choose hyper-parameters and the boosting-round count, "
-            "so it is a validation set, not a pristine test set. Earlier windows are robustness checks.",
-            "The deployed model is retrained on all history; its future accuracy cannot be measured "
-            "because actuals for the forecast window are not part of the dataset.",
-        ],
+        "model_type": model_type_id(final_model),
+        "model_label": "Ensemble (LightGBM + CatBoost + XGBoost)" if is_ensemble(final_model) else "LightGBM model",
+        "members": primary.member_metrics,
+        "validation_notes": validation_notes,
     }
     write_json(paths.metrics, metrics)
     write_json(paths.importance, importance)
     write_json(paths.dataset_summary, dataset_summary)
 
+    if is_ensemble(final_model):
+        import catboost, lightgbm, xgboost
+        lib = {"lightgbm": lightgbm.__version__, "catboost": catboost.__version__, "xgboost": xgboost.__version__}
+        e = cfg.model.ensemble
+        recipe = {"lightgbm": {**final_model.lightgbm.params, "num_boost_round": final_model.lightgbm.n_estimators},
+                  "catboost": {**e.catboost_params, "random_seed": cfg.seed},
+                  "xgboost": {**e.xgboost_params, "seed": cfg.seed, "num_boost_round": e.xgboost_rounds}}
+        components = [{"name": m, "family": HUMAN_NAME[m], "weight": final_model.weights[m], **component_files[m],
+                       "target": TARGET_TRANSFORM[m], "library_version": lib[m], "params": recipe[m],
+                       "n_trees": final_model.n_estimators[m]} for m in MEMBERS]
+        version_hash = hashlib.sha256("".join(c["sha256"] for c in components).encode()).hexdigest()[:8]
+        model_fields = {
+            "model_type": "boosting_ensemble", "model_type_label": "LightGBM + CatBoost + XGBoost ensemble",
+            "algorithm": "3-model boosting ensemble (direct multi-horizon): LightGBM Tweedie x %g + CatBoost log1p x %g + "
+                         "XGBoost Tweedie x %g, blended in demand space" % tuple(final_model.weights[m] for m in MEMBERS),
+            "weights": dict(final_model.weights), "components": components, "ensemble_recipe": recipe,
+            "n_estimators": final_model.lightgbm.n_estimators, "params": final_model.lightgbm.params,   # LightGBM member (back-compat)
+        }
+    else:
+        version_hash = short_hash(paths.model_file)
+        model_fields = {
+            "model_type": "lightgbm_single", "model_type_label": "LightGBM (single model)",
+            "algorithm": "LightGBM gradient-boosted trees, Tweedie objective (direct multi-horizon)",
+            "n_estimators": final_model.n_estimators, "params": final_model.params,
+        }
+
     card = {
-        "model_version": f"{raw.train_max:%Y%m%d}-{short_hash(paths.model_file)}",
-        "algorithm": "LightGBM gradient-boosted trees, Tweedie objective (direct multi-horizon)",
+        "model_version": f"{raw.train_max:%Y%m%d}-{version_hash}",
+        **model_fields,
         "data_label": cfg.data.label,
         "created_at": now,
         "seed": cfg.seed,
-        "n_estimators": final_model.n_estimators,
-        "params": final_model.params,
         "feature_names": final_model.feature_names,
         "categorical_features": final_model.categorical_features,
         "categories": final_model.categories,
