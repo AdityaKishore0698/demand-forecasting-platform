@@ -58,7 +58,7 @@ docs/         architecture, ML audit, EDA, experiments, deployment checklist, sc
 
 - **Direct multi-horizon forecasting.** One LightGBM model predicts the demand `h` days after a *forecast origin* (the last known day), for any `h` in 1–42. History features are frozen at the origin and `h` is itself a feature, so there is no recursive error compounding and no need to invent future inputs.
 - **Tweedie objective** (variance power 1.05, log link) for a non-negative, right-skewed target with a substantial number of zero-demand observations; closed days are known in advance and forecast as exactly 0.
-- **Single model.** 1,160 trees, 44 features, trained on 5,374,050 (origin, store, horizon) rows built from weekly forecast origins. An offline blend of three model families was evaluated and **not** adopted (gain ≈ 0.03 percentage points of WAPE, within seed noise, three runtimes) — see [docs/ML_AUDIT.md](docs/ML_AUDIT.md).
+- **Single model.** 1,160 trees, 44 features, trained on 5,374,050 (origin, store, horizon) rows built from weekly forecast origins. A 3-way LightGBM + CatBoost + XGBoost blend was evaluated but **not adopted**: it improved RMSLE by about 0.68% and WAPE by 0.03 percentage points on the primary validation window, while adding model size, dependencies and serving complexity — see [docs/ML_AUDIT.md](docs/ML_AUDIT.md).
 
 ## Feature engineering
 
