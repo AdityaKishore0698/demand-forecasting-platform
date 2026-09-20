@@ -1,0 +1,61 @@
+# --- Raw data: never commit. See data/README.md for where to place it. ---
+data/raw/*
+!data/raw/.gitkeep
+
+# --- Generated synthetic demo data (recreate with `make demo-data`) ---
+data/synthetic/
+
+# --- Figures generated from YOUR data by `make eda` (derived from the raw data; keep local) ---
+docs/figures/
+
+# --- Private / historical working material (kept locally, not part of the product) ---
+_archive/
+
+# --- Python ---
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+.ipynb_checkpoints/
+
+# --- Secrets / local config ---
+.env
+.env.*
+!.env.example
+
+# --- Node / frontend ---
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/*.tsbuildinfo
+!frontend/.env.example
+
+# --- Runtime / tooling noise ---
+logs/
+catboost_info/
+.DS_Store
+.idea/
+.vscode/
+
+# --- Model artifacts ---
+# Bundles trained on your own (possibly restricted) data stay local. Only the small demo bundle,
+# trained on the SYNTHETIC dataset (configs/demo.yaml), is published.
+artifacts/*
+!artifacts/demo/
+
+# --- Temporary / cache files ---
+*.log
+*.tmp
+*.bak
+*.swp
+*.bundle
+*.zip
+.cache/
+cache/
+tmp/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/

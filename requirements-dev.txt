@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest==8.4.2
+httpx==0.28.1        # required by FastAPI's TestClient
+matplotlib==3.9.4    # only for scripts/eda.py

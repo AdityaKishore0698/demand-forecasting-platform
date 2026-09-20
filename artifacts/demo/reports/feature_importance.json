@@ -1,0 +1,1246 @@
+{
+  "gain": [
+    {
+      "feature": "IsOpen",
+      "label": "Store open that day",
+      "group": "schedule",
+      "group_label": "Operating schedule",
+      "description": "Whether the store is scheduled to be open. Closed days always have zero orders, so this is the single strongest signal.",
+      "value": 2851102593.0,
+      "share": 0.5766854269103839
+    },
+    {
+      "feature": "OV_hubweekday_mean",
+      "label": "Store's typical demand on this weekday",
+      "group": "baseline",
+      "group_label": "Store baseline",
+      "description": "Average demand this specific store has historically had on this weekday. Combines the weekly rhythm with store-level differences.",
+      "value": 1654025581.2593994,
+      "share": 0.3345556385067174
+    },
+    {
+      "feature": "PromoActive",
+      "label": "Promotion running",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Promotion days lift demand noticeably on average.",
+      "value": 160187919.8720703,
+      "share": 0.03240081194696989
+    },
+    {
+      "feature": "OV_rollmean28",
+      "label": "Average demand, last 28 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Smoothed recent demand level over the 28 days up to the last known day.",
+      "value": 89255452.53961182,
+      "share": 0.018053478285299133
+    },
+    {
+      "feature": "OV_rollmean14",
+      "label": "Average demand, last 14 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Smoothed recent demand level over the 14 days up to the last known day.",
+      "value": 35655232.21801758,
+      "share": 0.007211895097608766
+    },
+    {
+      "feature": "HubID",
+      "label": "Store identity",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Lets the model learn store-specific levels beyond the numeric features.",
+      "value": 33671056.537231445,
+      "share": 0.006810560820003782
+    },
+    {
+      "feature": "WeekOfYear",
+      "label": "Week of year",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "A smooth annual seasonality signal.",
+      "value": 23156612.418884277,
+      "share": 0.004683830371930281
+    },
+    {
+      "feature": "Weekday",
+      "label": "Day of week",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "Demand follows a strong weekly rhythm; most stores are closed on Sundays.",
+      "value": 12976128.94519043,
+      "share": 0.0026246493124357844
+    },
+    {
+      "feature": "SchoolClosureFlag",
+      "label": "School closure",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Schools closed that day (changes household routines).",
+      "value": 12000477.242004395,
+      "share": 0.002427306670207097
+    },
+    {
+      "feature": "OV_rollstd28",
+      "label": "Demand volatility, last 28 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "How much the store's demand has fluctuated over the last 28 days.",
+      "value": 10071042.608337402,
+      "share": 0.0020370447279873527
+    },
+    {
+      "feature": "OV_rollmean42",
+      "label": "Average demand, last 42 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Smoothed recent demand level over the 42 days up to the last known day.",
+      "value": 9754262.575378418,
+      "share": 0.001972970418984177
+    },
+    {
+      "feature": "OV_rollstd42",
+      "label": "Demand volatility, last 42 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "How much the store's demand has fluctuated over the last 42 days.",
+      "value": 9155528.548034668,
+      "share": 0.0018518659771404374
+    },
+    {
+      "feature": "OV_rollstd14",
+      "label": "Demand volatility, last 14 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "How much the store's demand has fluctuated over the last 14 days.",
+      "value": 7900173.552368164,
+      "share": 0.0015979484459448068
+    },
+    {
+      "feature": "RegionalHoliday",
+      "label": "Regional holiday",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Public/regional holiday code for the day.",
+      "value": 7228758.10345459,
+      "share": 0.001462142913817836
+    },
+    {
+      "feature": "Month",
+      "label": "Month",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "Seasonal level (e.g. December peaks).",
+      "value": 5934786.565795898,
+      "share": 0.001200414510765386
+    },
+    {
+      "feature": "OV_expanding_mean",
+      "label": "Store's long-run average demand",
+      "group": "baseline",
+      "group_label": "Store baseline",
+      "description": "Average demand over the store's entire known history.",
+      "value": 4227210.355041504,
+      "share": 0.0008550273196840746
+    },
+    {
+      "feature": "PromoActive_prev1",
+      "label": "Promotion yesterday",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day before the target date (e.g. promotion starting/ending).",
+      "value": 4184563.8696899414,
+      "share": 0.0008464013212119133
+    },
+    {
+      "feature": "MonthsSinceCompetitorOpen",
+      "label": "Months since competitor opened",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "How long the nearest competitor has been trading.",
+      "value": 2936932.6510620117,
+      "share": 0.0005940460591783208
+    },
+    {
+      "feature": "SchoolClosureFlag_prev1",
+      "label": "School closure yesterday",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day before the target date (e.g. promotion starting/ending).",
+      "value": 2469023.642211914,
+      "share": 0.0004994032682852702
+    },
+    {
+      "feature": "OV_lag7",
+      "label": "Demand 6 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 2057114.9709472656,
+      "share": 0.0004160875263265091
+    },
+    {
+      "feature": "DayOfMonth",
+      "label": "Day of month",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "Captures pay-day / month-start and month-end effects.",
+      "value": 1453436.7301635742,
+      "share": 0.00029398303073326597
+    },
+    {
+      "feature": "PromoActive_next1",
+      "label": "Promotion tomorrow",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day after the target date (e.g. promotion starting/ending).",
+      "value": 658171.0871582031,
+      "share": 0.00013312662803148027
+    },
+    {
+      "feature": "OV_lag42",
+      "label": "Demand 41 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 631855.6286621094,
+      "share": 0.0001278038657238658
+    },
+    {
+      "feature": "IsOpen_prev1",
+      "label": "Open yesterday",
+      "group": "schedule",
+      "group_label": "Operating schedule",
+      "description": "Known schedule value for the day before the target date (e.g. promotion starting/ending).",
+      "value": 461714.21337890625,
+      "share": 9.338978502798711e-05
+    },
+    {
+      "feature": "OV_lag35",
+      "label": "Demand 34 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 431191.67419433594,
+      "share": 8.721606697825474e-05
+    },
+    {
+      "feature": "IsWeekend",
+      "label": "Weekend",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "Saturday or Sunday.",
+      "value": 332635.0347290039,
+      "share": 6.728126075821151e-05
+    },
+    {
+      "feature": "OV_lag28",
+      "label": "Demand 27 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 300590.380859375,
+      "share": 6.0799668358704886e-05
+    },
+    {
+      "feature": "OV_lag1",
+      "label": "Last known day's demand",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 269343.06536865234,
+      "share": 5.4479351609033004e-05
+    },
+    {
+      "feature": "OV_rollmean7",
+      "label": "Average demand, last 7 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Smoothed recent demand level over the 7 days up to the last known day.",
+      "value": 260752.77410888672,
+      "share": 5.274181477167568e-05
+    },
+    {
+      "feature": "h",
+      "label": "Forecast horizon (days ahead)",
+      "group": "horizon",
+      "group_label": "Forecast horizon",
+      "description": "How far past the last known day the target is. Lets the model trust recent history less for later days.",
+      "value": 218696.11724853516,
+      "share": 4.4235119440724685e-05
+    },
+    {
+      "feature": "OV_lag21",
+      "label": "Demand 20 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 202284.3446044922,
+      "share": 4.091555102644768e-05
+    },
+    {
+      "feature": "SchoolClosureFlag_next1",
+      "label": "School closure tomorrow",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day after the target date (e.g. promotion starting/ending).",
+      "value": 201748.34411621094,
+      "share": 4.080713554144635e-05
+    },
+    {
+      "feature": "CompetitorDistance",
+      "label": "Distance to nearest competitor",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Closer competitors can cap demand.",
+      "value": 155314.26049804688,
+      "share": 3.14150289928156e-05
+    },
+    {
+      "feature": "IsLoyaltyPromoMonth",
+      "label": "Loyalty promo month",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Whether this month is one of the store's recurring loyalty-promo months.",
+      "value": 83373.4136352539,
+      "share": 1.6863732912757524e-05
+    },
+    {
+      "feature": "RegionalHoliday_next1",
+      "label": "Holiday tomorrow",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day after the target date (e.g. promotion starting/ending).",
+      "value": 69385.63885498047,
+      "share": 1.4034460514600686e-05
+    },
+    {
+      "feature": "AssortmentTier",
+      "label": "Assortment tier",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Breadth of the product range the store carries.",
+      "value": 57191.29016113281,
+      "share": 1.1567939948251633e-05
+    },
+    {
+      "feature": "IsOpen_next1",
+      "label": "Open tomorrow",
+      "group": "schedule",
+      "group_label": "Operating schedule",
+      "description": "Known schedule value for the day after the target date (e.g. promotion starting/ending).",
+      "value": 56830.54510498047,
+      "share": 1.1494972943408035e-05
+    },
+    {
+      "feature": "OV_lag14",
+      "label": "Demand 13 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 43043.017028808594,
+      "share": 8.706203947803505e-06
+    },
+    {
+      "feature": "RegionalHoliday_prev1",
+      "label": "Holiday yesterday",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day before the target date (e.g. promotion starting/ending).",
+      "value": 42964.76483154297,
+      "share": 8.69037607058239e-06
+    },
+    {
+      "feature": "HubFormat",
+      "label": "Store format",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Format/type of the store.",
+      "value": 28035.58984375,
+      "share": 5.670688994995205e-06
+    },
+    {
+      "feature": "OV_rollstd7",
+      "label": "Demand volatility, last 7 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "How much the store's demand has fluctuated over the last 7 days.",
+      "value": 19209.359802246094,
+      "share": 3.885429407356811e-06
+    },
+    {
+      "feature": "LoyaltyProgram",
+      "label": "Loyalty programme store",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Whether the store participates in the recurring loyalty programme.",
+      "value": 17445.788024902344,
+      "share": 3.528716132358718e-06
+    },
+    {
+      "feature": "HasKnownCompetitorOpenDate",
+      "label": "Competitor opening date known",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Whether the competitor's opening date is recorded.",
+      "value": 2040.6700439453125,
+      "share": 4.127612518627576e-07
+    },
+    {
+      "feature": "IsLoyaltyActive",
+      "label": "Loyalty programme active",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Whether the programme has started by this date.",
+      "value": 0.0,
+      "share": 0.0
+    }
+  ],
+  "permutation": [
+    {
+      "feature": "IsOpen",
+      "label": "Store open that day",
+      "group": "schedule",
+      "group_label": "Operating schedule",
+      "description": "Whether the store is scheduled to be open. Closed days always have zero orders, so this is the single strongest signal.",
+      "value": 2.1259389082212543,
+      "share": 0.6891993765083384,
+      "std": 0.015046276232776545
+    },
+    {
+      "feature": "OV_hubweekday_mean",
+      "label": "Store's typical demand on this weekday",
+      "group": "baseline",
+      "group_label": "Store baseline",
+      "description": "Average demand this specific store has historically had on this weekday. Combines the weekly rhythm with store-level differences.",
+      "value": 0.6723590828345816,
+      "share": 0.2179693211725561,
+      "std": 0.000383964245516899
+    },
+    {
+      "feature": "RegionalHoliday",
+      "label": "Regional holiday",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Public/regional holiday code for the day.",
+      "value": 0.15260945048073624,
+      "share": 0.04947382905212686,
+      "std": 0.003720889737425681
+    },
+    {
+      "feature": "PromoActive",
+      "label": "Promotion running",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Promotion days lift demand noticeably on average.",
+      "value": 0.08132327540212914,
+      "share": 0.026363857628278645,
+      "std": 0.0007060495903303821
+    },
+    {
+      "feature": "Weekday",
+      "label": "Day of week",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "Demand follows a strong weekly rhythm; most stores are closed on Sundays.",
+      "value": 0.011721120981632333,
+      "share": 0.0037998219239887394,
+      "std": 0.0005148776820855794
+    },
+    {
+      "feature": "OV_rollmean28",
+      "label": "Average demand, last 28 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Smoothed recent demand level over the 28 days up to the last known day.",
+      "value": 0.011144345971984632,
+      "share": 0.003612839609728646,
+      "std": 0.00012292890903273235
+    },
+    {
+      "feature": "OV_expanding_mean",
+      "label": "Store's long-run average demand",
+      "group": "baseline",
+      "group_label": "Store baseline",
+      "description": "Average demand over the store's entire known history.",
+      "value": 0.007724818325864413,
+      "share": 0.0025042770294280993,
+      "std": 4.2303830747159044e-05
+    },
+    {
+      "feature": "HubID",
+      "label": "Store identity",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Lets the model learn store-specific levels beyond the numeric features.",
+      "value": 0.006848498776475434,
+      "share": 0.0022201866048512818,
+      "std": 0.0010936644558508374
+    },
+    {
+      "feature": "OV_rollmean42",
+      "label": "Average demand, last 42 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Smoothed recent demand level over the 42 days up to the last known day.",
+      "value": 0.0061468849713643275,
+      "share": 0.0019927333157834415,
+      "std": 0.0008606271066389087
+    },
+    {
+      "feature": "OV_rollmean14",
+      "label": "Average demand, last 14 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Smoothed recent demand level over the 14 days up to the last known day.",
+      "value": 0.004183739292638197,
+      "share": 0.0013563092056921857,
+      "std": 0.00017015519462125483
+    },
+    {
+      "feature": "MonthsSinceCompetitorOpen",
+      "label": "Months since competitor opened",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "How long the nearest competitor has been trading.",
+      "value": 0.0013423984127314131,
+      "share": 0.00043518661119681907,
+      "std": 3.163812253735576e-05
+    },
+    {
+      "feature": "OV_rollstd42",
+      "label": "Demand volatility, last 42 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "How much the store's demand has fluctuated over the last 42 days.",
+      "value": 0.000858007594568333,
+      "share": 0.00027815394738256113,
+      "std": 3.586275481728962e-05
+    },
+    {
+      "feature": "WeekOfYear",
+      "label": "Week of year",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "A smooth annual seasonality signal.",
+      "value": 0.000638819124253065,
+      "share": 0.0002070961401732783,
+      "std": 0.00018213328596200506
+    },
+    {
+      "feature": "OV_rollstd28",
+      "label": "Demand volatility, last 28 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "How much the store's demand has fluctuated over the last 28 days.",
+      "value": 0.0006377554029881882,
+      "share": 0.00020675129675858908,
+      "std": 5.055181734381353e-05
+    },
+    {
+      "feature": "PromoActive_prev1",
+      "label": "Promotion yesterday",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day before the target date (e.g. promotion starting/ending).",
+      "value": 0.0005194467602392394,
+      "share": 0.00016839730525732564,
+      "std": 6.044778568647935e-05
+    },
+    {
+      "feature": "OV_rollstd14",
+      "label": "Demand volatility, last 14 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "How much the store's demand has fluctuated over the last 14 days.",
+      "value": 0.0002616829759013728,
+      "share": 8.483392591227875e-05,
+      "std": 9.65287051286623e-05
+    },
+    {
+      "feature": "Month",
+      "label": "Month",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "Seasonal level (e.g. December peaks).",
+      "value": 0.00024437834757201626,
+      "share": 7.922400974338957e-05,
+      "std": 3.147484280163759e-05
+    },
+    {
+      "feature": "OV_lag1",
+      "label": "Last known day's demand",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 3.8364695661291526e-05,
+      "share": 1.2437292636888166e-05,
+      "std": 4.1460272725168945e-05
+    },
+    {
+      "feature": "OV_lag14",
+      "label": "Demand 13 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 2.846493324983046e-05,
+      "share": 9.227929444383123e-06,
+      "std": 3.3730540273391174e-07
+    },
+    {
+      "feature": "IsWeekend",
+      "label": "Weekend",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "Saturday or Sunday.",
+      "value": 2.6322651099183747e-05,
+      "share": 8.533431819441496e-06,
+      "std": 9.43814331542947e-06
+    },
+    {
+      "feature": "h",
+      "label": "Forecast horizon (days ahead)",
+      "group": "horizon",
+      "group_label": "Forecast horizon",
+      "description": "How far past the last known day the target is. Lets the model trust recent history less for later days.",
+      "value": 2.049533946389681e-05,
+      "share": 6.64429966694713e-06,
+      "std": 9.08214380847261e-06
+    },
+    {
+      "feature": "PromoActive_next1",
+      "label": "Promotion tomorrow",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day after the target date (e.g. promotion starting/ending).",
+      "value": 1.3559152705275301e-05,
+      "share": 4.3956858564086846e-06,
+      "std": 2.2846291692843468e-05
+    },
+    {
+      "feature": "LoyaltyProgram",
+      "label": "Loyalty programme store",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Whether the store participates in the recurring loyalty programme.",
+      "value": 1.3306637612356398e-05,
+      "share": 4.313824028711921e-06,
+      "std": 2.044251615082593e-06
+    },
+    {
+      "feature": "HubFormat",
+      "label": "Store format",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Format/type of the store.",
+      "value": 6.597206097344599e-06,
+      "share": 2.138721066444542e-06,
+      "std": 7.72056076293881e-06
+    },
+    {
+      "feature": "CompetitorDistance",
+      "label": "Distance to nearest competitor",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Closer competitors can cap demand.",
+      "value": 3.50195029710787e-07,
+      "share": 1.1352828399708407e-07,
+      "std": 4.885244028904334e-06
+    },
+    {
+      "feature": "SchoolClosureFlag",
+      "label": "School closure",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Schools closed that day (changes household routines).",
+      "value": 0.0,
+      "share": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "SchoolClosureFlag_prev1",
+      "label": "School closure yesterday",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day before the target date (e.g. promotion starting/ending).",
+      "value": 0.0,
+      "share": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "IsLoyaltyActive",
+      "label": "Loyalty programme active",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Whether the programme has started by this date.",
+      "value": 0.0,
+      "share": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "IsLoyaltyPromoMonth",
+      "label": "Loyalty promo month",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Whether this month is one of the store's recurring loyalty-promo months.",
+      "value": 0.0,
+      "share": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "HasKnownCompetitorOpenDate",
+      "label": "Competitor opening date known",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Whether the competitor's opening date is recorded.",
+      "value": -3.6077873319106946e-06,
+      "share": 0.0,
+      "std": 3.833614874104718e-06
+    },
+    {
+      "feature": "OV_lag42",
+      "label": "Demand 41 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": -7.1335788300874725e-06,
+      "share": 0.0,
+      "std": 7.348664588888165e-05
+    },
+    {
+      "feature": "SchoolClosureFlag_next1",
+      "label": "School closure tomorrow",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day after the target date (e.g. promotion starting/ending).",
+      "value": -7.7158637490915e-06,
+      "share": 0.0,
+      "std": 1.1185664371693438e-06
+    },
+    {
+      "feature": "AssortmentTier",
+      "label": "Assortment tier",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Breadth of the product range the store carries.",
+      "value": -8.949809710126488e-06,
+      "share": 0.0,
+      "std": 1.5594733219909118e-06
+    },
+    {
+      "feature": "RegionalHoliday_next1",
+      "label": "Holiday tomorrow",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day after the target date (e.g. promotion starting/ending).",
+      "value": -1.1252073248618766e-05,
+      "share": 0.0,
+      "std": 2.0045958345371595e-05
+    },
+    {
+      "feature": "OV_lag28",
+      "label": "Demand 27 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": -1.230179506701845e-05,
+      "share": 0.0,
+      "std": 1.6040619673349243e-05
+    },
+    {
+      "feature": "RegionalHoliday_prev1",
+      "label": "Holiday yesterday",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day before the target date (e.g. promotion starting/ending).",
+      "value": -2.4950783033661494e-05,
+      "share": 0.0,
+      "std": 2.0199048251234863e-06
+    },
+    {
+      "feature": "OV_rollstd7",
+      "label": "Demand volatility, last 7 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "How much the store's demand has fluctuated over the last 7 days.",
+      "value": -2.5688878930063552e-05,
+      "share": 0.0,
+      "std": 1.060330364940909e-05
+    },
+    {
+      "feature": "IsOpen_prev1",
+      "label": "Open yesterday",
+      "group": "schedule",
+      "group_label": "Operating schedule",
+      "description": "Known schedule value for the day before the target date (e.g. promotion starting/ending).",
+      "value": -3.4731463601458956e-05,
+      "share": 0.0,
+      "std": 9.834825874230346e-06
+    },
+    {
+      "feature": "OV_lag7",
+      "label": "Demand 6 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": -3.812615512341355e-05,
+      "share": 0.0,
+      "std": 1.5880162696213507e-05
+    },
+    {
+      "feature": "OV_lag21",
+      "label": "Demand 20 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": -4.2289716786228504e-05,
+      "share": 0.0,
+      "std": 3.006756651934006e-05
+    },
+    {
+      "feature": "OV_rollmean7",
+      "label": "Average demand, last 7 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Smoothed recent demand level over the 7 days up to the last known day.",
+      "value": -6.97023828326454e-05,
+      "share": 0.0,
+      "std": 8.802659170151217e-06
+    },
+    {
+      "feature": "IsOpen_next1",
+      "label": "Open tomorrow",
+      "group": "schedule",
+      "group_label": "Operating schedule",
+      "description": "Known schedule value for the day after the target date (e.g. promotion starting/ending).",
+      "value": -0.00014693318058252303,
+      "share": 0.0,
+      "std": 0.00011708730849825655
+    },
+    {
+      "feature": "OV_lag35",
+      "label": "Demand 34 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": -0.00019913669593198124,
+      "share": 0.0,
+      "std": 9.870718925011901e-06
+    },
+    {
+      "feature": "DayOfMonth",
+      "label": "Day of month",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "Captures pay-day / month-start and month-end effects.",
+      "value": -0.00130218695239602,
+      "share": 0.0,
+      "std": 0.0003922369869892445
+    }
+  ],
+  "shap": [
+    {
+      "feature": "IsOpen",
+      "label": "Store open that day",
+      "group": "schedule",
+      "group_label": "Operating schedule",
+      "description": "Whether the store is scheduled to be open. Closed days always have zero orders, so this is the single strongest signal.",
+      "value": 1.5890661632957968,
+      "share": 0.6086950249232722
+    },
+    {
+      "feature": "OV_hubweekday_mean",
+      "label": "Store's typical demand on this weekday",
+      "group": "baseline",
+      "group_label": "Store baseline",
+      "description": "Average demand this specific store has historically had on this weekday. Combines the weekly rhythm with store-level differences.",
+      "value": 0.6384322725394594,
+      "share": 0.2445527801304581
+    },
+    {
+      "feature": "PromoActive",
+      "label": "Promotion running",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Promotion days lift demand noticeably on average.",
+      "value": 0.10658693079386318,
+      "share": 0.04082834056544488
+    },
+    {
+      "feature": "Weekday",
+      "label": "Day of week",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "Demand follows a strong weekly rhythm; most stores are closed on Sundays.",
+      "value": 0.04706347147387057,
+      "share": 0.01802775844295088
+    },
+    {
+      "feature": "RegionalHoliday",
+      "label": "Regional holiday",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Public/regional holiday code for the day.",
+      "value": 0.045159740422113084,
+      "share": 0.01729853039268937
+    },
+    {
+      "feature": "HubID",
+      "label": "Store identity",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Lets the model learn store-specific levels beyond the numeric features.",
+      "value": 0.029616152206254936,
+      "share": 0.011344527321586481
+    },
+    {
+      "feature": "OV_rollmean28",
+      "label": "Average demand, last 28 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Smoothed recent demand level over the 28 days up to the last known day.",
+      "value": 0.029375737233892165,
+      "share": 0.01125243587758344
+    },
+    {
+      "feature": "OV_rollmean42",
+      "label": "Average demand, last 42 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Smoothed recent demand level over the 42 days up to the last known day.",
+      "value": 0.017277323861131115,
+      "share": 0.006618114035256211
+    },
+    {
+      "feature": "OV_rollmean14",
+      "label": "Average demand, last 14 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Smoothed recent demand level over the 14 days up to the last known day.",
+      "value": 0.013973005782298572,
+      "share": 0.0053523882764383275
+    },
+    {
+      "feature": "WeekOfYear",
+      "label": "Week of year",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "A smooth annual seasonality signal.",
+      "value": 0.010310091386172365,
+      "share": 0.003949301469141667
+    },
+    {
+      "feature": "SchoolClosureFlag",
+      "label": "School closure",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Schools closed that day (changes household routines).",
+      "value": 0.00923348466019802,
+      "share": 0.00353690507367608
+    },
+    {
+      "feature": "OV_expanding_mean",
+      "label": "Store's long-run average demand",
+      "group": "baseline",
+      "group_label": "Store baseline",
+      "description": "Average demand over the store's entire known history.",
+      "value": 0.008618778958152561,
+      "share": 0.0033014408046169517
+    },
+    {
+      "feature": "MonthsSinceCompetitorOpen",
+      "label": "Months since competitor opened",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "How long the nearest competitor has been trading.",
+      "value": 0.007200419723712514,
+      "share": 0.002758135415892914
+    },
+    {
+      "feature": "OV_rollstd28",
+      "label": "Demand volatility, last 28 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "How much the store's demand has fluctuated over the last 28 days.",
+      "value": 0.00662037426371607,
+      "share": 0.0025359478230258673
+    },
+    {
+      "feature": "DayOfMonth",
+      "label": "Day of month",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "Captures pay-day / month-start and month-end effects.",
+      "value": 0.006329467518389249,
+      "share": 0.0024245154027232423
+    },
+    {
+      "feature": "OV_rollstd14",
+      "label": "Demand volatility, last 14 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "How much the store's demand has fluctuated over the last 14 days.",
+      "value": 0.006262524414059027,
+      "share": 0.002398872710493101
+    },
+    {
+      "feature": "Month",
+      "label": "Month",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "Seasonal level (e.g. December peaks).",
+      "value": 0.005518923944847199,
+      "share": 0.0021140350387871703
+    },
+    {
+      "feature": "OV_rollstd42",
+      "label": "Demand volatility, last 42 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "How much the store's demand has fluctuated over the last 42 days.",
+      "value": 0.0051463577049457206,
+      "share": 0.001971322783048209
+    },
+    {
+      "feature": "PromoActive_prev1",
+      "label": "Promotion yesterday",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day before the target date (e.g. promotion starting/ending).",
+      "value": 0.004403201506414986,
+      "share": 0.0016866552901300138
+    },
+    {
+      "feature": "OV_lag42",
+      "label": "Demand 41 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 0.003996226945347504,
+      "share": 0.0015307628570054425
+    },
+    {
+      "feature": "OV_lag35",
+      "label": "Demand 34 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 0.0032704416739477477,
+      "share": 0.0012527493330453435
+    },
+    {
+      "feature": "OV_lag28",
+      "label": "Demand 27 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 0.0025292579692223166,
+      "share": 0.0009688374078899721
+    },
+    {
+      "feature": "OV_lag7",
+      "label": "Demand 6 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 0.002518280882731628,
+      "share": 0.0009646326125898341
+    },
+    {
+      "feature": "SchoolClosureFlag_prev1",
+      "label": "School closure yesterday",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day before the target date (e.g. promotion starting/ending).",
+      "value": 0.0018725245516437684,
+      "share": 0.0007172743369402897
+    },
+    {
+      "feature": "OV_lag1",
+      "label": "Last known day's demand",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 0.0017435485856896922,
+      "share": 0.0006678698309327537
+    },
+    {
+      "feature": "PromoActive_next1",
+      "label": "Promotion tomorrow",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day after the target date (e.g. promotion starting/ending).",
+      "value": 0.0013371524406916387,
+      "share": 0.0005121989612596794
+    },
+    {
+      "feature": "OV_lag21",
+      "label": "Demand 20 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 0.0012456181531661234,
+      "share": 0.0004771365663049477
+    },
+    {
+      "feature": "IsOpen_prev1",
+      "label": "Open yesterday",
+      "group": "schedule",
+      "group_label": "Operating schedule",
+      "description": "Known schedule value for the day before the target date (e.g. promotion starting/ending).",
+      "value": 0.0011604285764485358,
+      "share": 0.00044450452572599136
+    },
+    {
+      "feature": "OV_rollmean7",
+      "label": "Average demand, last 7 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Smoothed recent demand level over the 7 days up to the last known day.",
+      "value": 0.0010946951108907076,
+      "share": 0.0004193251880871926
+    },
+    {
+      "feature": "IsLoyaltyPromoMonth",
+      "label": "Loyalty promo month",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Whether this month is one of the store's recurring loyalty-promo months.",
+      "value": 0.0007430889025612231,
+      "share": 0.0002846417150602398
+    },
+    {
+      "feature": "IsOpen_next1",
+      "label": "Open tomorrow",
+      "group": "schedule",
+      "group_label": "Operating schedule",
+      "description": "Known schedule value for the day after the target date (e.g. promotion starting/ending).",
+      "value": 0.000721204523086977,
+      "share": 0.00027625885900478244
+    },
+    {
+      "feature": "h",
+      "label": "Forecast horizon (days ahead)",
+      "group": "horizon",
+      "group_label": "Forecast horizon",
+      "description": "How far past the last known day the target is. Lets the model trust recent history less for later days.",
+      "value": 0.0004004665101494343,
+      "share": 0.00015339951098749225
+    },
+    {
+      "feature": "CompetitorDistance",
+      "label": "Distance to nearest competitor",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Closer competitors can cap demand.",
+      "value": 0.00030094615296548616,
+      "share": 0.0001152780358118988
+    },
+    {
+      "feature": "RegionalHoliday_prev1",
+      "label": "Holiday yesterday",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day before the target date (e.g. promotion starting/ending).",
+      "value": 0.0002970120626543603,
+      "share": 0.00011377107451897535
+    },
+    {
+      "feature": "OV_rollstd7",
+      "label": "Demand volatility, last 7 days",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "How much the store's demand has fluctuated over the last 7 days.",
+      "value": 0.0002214824761707755,
+      "share": 8.483931284096133e-05
+    },
+    {
+      "feature": "OV_lag14",
+      "label": "Demand 13 days before the last known day",
+      "group": "recent",
+      "group_label": "Recent demand",
+      "description": "Demand on a specific past day, measured from the last day with known data.",
+      "value": 0.00018716143178692062,
+      "share": 7.169256700421512e-05
+    },
+    {
+      "feature": "IsWeekend",
+      "label": "Weekend",
+      "group": "calendar",
+      "group_label": "Calendar",
+      "description": "Saturday or Sunday.",
+      "value": 0.00016486003618972964,
+      "share": 6.314997207493838e-05
+    },
+    {
+      "feature": "RegionalHoliday_next1",
+      "label": "Holiday tomorrow",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day after the target date (e.g. promotion starting/ending).",
+      "value": 0.00016303083886820492,
+      "share": 6.244929432159312e-05
+    },
+    {
+      "feature": "HubFormat",
+      "label": "Store format",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Format/type of the store.",
+      "value": 0.00015014954367635491,
+      "share": 5.7515088006618155e-05
+    },
+    {
+      "feature": "SchoolClosureFlag_next1",
+      "label": "School closure tomorrow",
+      "group": "promo",
+      "group_label": "Promotions & holidays",
+      "description": "Known schedule value for the day after the target date (e.g. promotion starting/ending).",
+      "value": 0.00010375580010317725,
+      "share": 3.9743870197795795e-05
+    },
+    {
+      "feature": "LoyaltyProgram",
+      "label": "Loyalty programme store",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Whether the store participates in the recurring loyalty programme.",
+      "value": 7.74878354582821e-05,
+      "share": 2.968187292950976e-05
+    },
+    {
+      "feature": "AssortmentTier",
+      "label": "Assortment tier",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Breadth of the product range the store carries.",
+      "value": 7.3759517969323e-05,
+      "share": 2.8253733334518336e-05
+    },
+    {
+      "feature": "HasKnownCompetitorOpenDate",
+      "label": "Competitor opening date known",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Whether the competitor's opening date is recorded.",
+      "value": 4.438482355257876e-05,
+      "share": 1.7001696910163786e-05
+    },
+    {
+      "feature": "IsLoyaltyActive",
+      "label": "Loyalty programme active",
+      "group": "hub",
+      "group_label": "Store attributes",
+      "description": "Whether the programme has started by this date.",
+      "value": 0.0,
+      "share": 0.0
+    }
+  ],
+  "meta": {
+    "gain": "Loss reduction attributed to each feature inside the final model's trees.",
+    "permutation": "Increase in hold-out RMSLE when the feature is shuffled (backtest model, hold-out window).",
+    "shap": "Mean absolute TreeSHAP contribution, log-scale (backtest model, hold-out window).",
+    "permutation_baseline_rmsle": 0.1423136695791178
+  }
+}

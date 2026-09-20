@@ -1,0 +1,401 @@
+{
+  "generated_at": "2026-09-20T04:14:02+00:00",
+  "definitions": {
+    "rmsle": "Root mean squared log error over ALL hub-days (log-scale, relative error). The model-selection metric.",
+    "mae": "Mean absolute error in orders per hub-day, OPEN days only.",
+    "rmse": "Root mean squared error in orders per hub-day, OPEN days only.",
+    "wape": "Weighted absolute percentage error = total absolute error / total actual orders, OPEN days only.",
+    "rmspe": "Root mean squared percentage error, open days with at least 1 actual order.",
+    "mape": "Mean absolute percentage error, open days with at least 1 actual order.",
+    "bias": "Total predicted / total actual - 1, open days (positive = over-forecast)."
+  },
+  "primary_window": {
+    "name": "primary",
+    "cutoff": "2023-05-08",
+    "start": "2023-05-09",
+    "end": "2023-06-19",
+    "horizon": 42
+  },
+  "model": {
+    "rmsle": 0.14231366957911779,
+    "rmse": 916.5706578619315,
+    "mae": 651.7531290070011,
+    "wape": 0.11242649419792264,
+    "rmspe": 0.14715235665153897,
+    "mape": 0.11394128860938989,
+    "bias": -0.007616362053167625,
+    "n_rows": 5040,
+    "n_open_rows": 4291
+  },
+  "training_in_sample": {
+    "rmsle": 0.11902063736617041,
+    "rmse": 748.1900725370498,
+    "mae": 548.6319618996353,
+    "wape": 0.10162342142006328,
+    "rmspe": 0.132084802156252,
+    "mape": 0.10395622236932187,
+    "bias": -0.0003905385481091095,
+    "n_rows": 200000,
+    "n_open_rows": 172001
+  },
+  "baselines": {
+    "global_mean": {
+      "label": "Global average",
+      "rmsle": 0.41193487983349164,
+      "rmse": 2799.675270065261,
+      "mae": 2001.4482243242264,
+      "wape": 0.34524699179006646,
+      "rmspe": 0.43370820183584324,
+      "mape": 0.33603243233296476,
+      "bias": -0.19738251810405338,
+      "n_rows": 5040,
+      "n_open_rows": 4291
+    },
+    "hub_mean": {
+      "label": "Store average",
+      "rmsle": 0.28570633112557886,
+      "rmse": 1895.7428686845408,
+      "mae": 1382.8185255285482,
+      "wape": 0.23853424251906472,
+      "rmspe": 0.2562072886679006,
+      "mape": 0.21685506889007536,
+      "bias": -0.19553687834837064,
+      "n_rows": 5040,
+      "n_open_rows": 4291
+    },
+    "last_value": {
+      "label": "Last known day",
+      "rmsle": 0.30258540013128915,
+      "rmse": 2237.0466508876148,
+      "mae": 1664.4611978559776,
+      "wape": 0.28711720569493776,
+      "rmspe": 0.41980320102449475,
+      "mape": 0.31418251354767224,
+      "bias": 0.18428826905888296,
+      "n_rows": 5040,
+      "n_open_rows": 4291
+    },
+    "seasonal_naive": {
+      "label": "Same weekday, last week",
+      "rmsle": 2.719559944063602,
+      "rmse": 2403.243016094481,
+      "mae": 1716.8914006059194,
+      "wape": 0.29616134161530233,
+      "rmspe": 0.4423050332533987,
+      "mape": 0.31863765444233394,
+      "bias": -0.08429158958634353,
+      "n_rows": 5040,
+      "n_open_rows": 4291
+    },
+    "rolling_7d_mean": {
+      "label": "7-day rolling average",
+      "rmsle": 0.2804267541603412,
+      "rmse": 1848.9733898836005,
+      "mae": 1351.8747877617604,
+      "wape": 0.23319649146016275,
+      "rmspe": 0.25351216225774376,
+      "mape": 0.21403775477373208,
+      "bias": -0.1827461935941478,
+      "n_rows": 5040,
+      "n_open_rows": 4291
+    }
+  },
+  "best_baseline": "rolling_7d_mean",
+  "improvement_vs_best_baseline_pct": {
+    "rmsle": 49.25103704700505,
+    "wape": 51.78894266634856,
+    "mae": 51.78894266634856,
+    "rmse": 50.42813147680655
+  },
+  "breakdowns": {
+    "by_horizon": [
+      {
+        "group": "1-7",
+        "n_open_rows": 735,
+        "rmsle": 0.1270011200113631,
+        "wape": 0.10713530614675604,
+        "mae": 638.1713476200082
+      },
+      {
+        "group": "8-14",
+        "n_open_rows": 590,
+        "rmsle": 0.11356194038721998,
+        "wape": 0.11055262216868875,
+        "mae": 633.0943936577272
+      },
+      {
+        "group": "15-21",
+        "n_open_rows": 761,
+        "rmsle": 0.2056475367475218,
+        "wape": 0.1272678658060731,
+        "mae": 743.9167989729152
+      },
+      {
+        "group": "22-28",
+        "n_open_rows": 735,
+        "rmsle": 0.12389729771359025,
+        "wape": 0.10469011753171036,
+        "mae": 602.8514185540205
+      },
+      {
+        "group": "29-35",
+        "n_open_rows": 735,
+        "rmsle": 0.13081652696688176,
+        "wape": 0.1120320674054032,
+        "mae": 646.2090432971854
+      },
+      {
+        "group": "36-42",
+        "n_open_rows": 735,
+        "rmsle": 0.13318810392472938,
+        "wape": 0.11192504467281132,
+        "mae": 639.3345854846966
+      }
+    ],
+    "by_weekday": [
+      {
+        "group": "Mon",
+        "n_open_rows": 646,
+        "rmsle": 0.13034545761988628,
+        "wape": 0.11193956401194696,
+        "mae": 740.5256155764458
+      },
+      {
+        "group": "Tue",
+        "n_open_rows": 649,
+        "rmsle": 0.12775172227574957,
+        "wape": 0.10691786717940491,
+        "mae": 642.0707870881718
+      },
+      {
+        "group": "Wed",
+        "n_open_rows": 720,
+        "rmsle": 0.13260703686083314,
+        "wape": 0.10053374005545031,
+        "mae": 578.1853172708757
+      },
+      {
+        "group": "Thu",
+        "n_open_rows": 720,
+        "rmsle": 0.14375314448067947,
+        "wape": 0.1152071144121864,
+        "mae": 661.7640660729002
+      },
+      {
+        "group": "Fri",
+        "n_open_rows": 720,
+        "rmsle": 0.13788346398618018,
+        "wape": 0.1084601586900323,
+        "mae": 685.3757105078989
+      },
+      {
+        "group": "Sat",
+        "n_open_rows": 720,
+        "rmsle": 0.13871241682623014,
+        "wape": 0.11206793093833028,
+        "mae": 496.63619584879837
+      },
+      {
+        "group": "Sun",
+        "n_open_rows": 116,
+        "rmsle": 0.1787714909633717,
+        "wape": 0.2295012487702788,
+        "mae": 1360.1470646732218
+      }
+    ],
+    "by_hub_tier": [
+      {
+        "group": "Low volume",
+        "n_open_rows": 1430,
+        "rmsle": 0.1477147865993071,
+        "wape": 0.11620437077120922,
+        "mae": 429.2582142726672
+      },
+      {
+        "group": "Mid volume",
+        "n_open_rows": 1424,
+        "rmsle": 0.13794188957253756,
+        "wape": 0.1101380926226232,
+        "mae": 607.4852124599585
+      },
+      {
+        "group": "High volume",
+        "n_open_rows": 1437,
+        "rmsle": 0.14110959771858886,
+        "wape": 0.11225761240832226,
+        "mae": 917.0316545693437
+      }
+    ],
+    "by_promo": [
+      {
+        "group": "Regular day",
+        "n_open_rows": 2569,
+        "rmsle": 0.1468477896564715,
+        "wape": 0.11617221258129973,
+        "mae": 586.3235083789618
+      },
+      {
+        "group": "Promotion day",
+        "n_open_rows": 1722,
+        "rmsle": 0.13376551703942147,
+        "wape": 0.1083486478072071,
+        "mae": 749.3656118138726
+      }
+    ]
+  },
+  "error_distribution": {
+    "bin_edges": [
+      -0.5,
+      -0.45,
+      -0.4,
+      -0.35,
+      -0.3,
+      -0.25,
+      -0.2,
+      -0.15,
+      -0.1,
+      -0.05,
+      -0.0,
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5
+    ],
+    "counts": [
+      22,
+      2,
+      6,
+      19,
+      74,
+      130,
+      266,
+      444,
+      513,
+      626,
+      579,
+      529,
+      411,
+      271,
+      166,
+      111,
+      54,
+      38,
+      17,
+      13
+    ],
+    "n": 4291,
+    "clipped_low": 16,
+    "clipped_high": 8,
+    "median_pct_error": 0.0038575675475634877,
+    "p10": -0.16346737117477642,
+    "p90": 0.19465959434767166,
+    "share_within_10pct": 0.5236541598694943,
+    "share_within_20pct": 0.8480540666511303
+  },
+  "windows": [
+    {
+      "name": "primary",
+      "cutoff": "2023-05-08",
+      "start": "2023-05-09",
+      "end": "2023-06-19",
+      "horizon": 42,
+      "n_train_rows": 560884,
+      "model": {
+        "rmsle": 0.14231366957911779,
+        "rmse": 916.5706578619315,
+        "mae": 651.7531290070011,
+        "wape": 0.11242649419792264,
+        "rmspe": 0.14715235665153897,
+        "mape": 0.11394128860938989,
+        "bias": -0.007616362053167625,
+        "n_rows": 5040,
+        "n_open_rows": 4291
+      },
+      "best_baseline": "rolling_7d_mean",
+      "best_baseline_metrics": {
+        "rmsle": 0.2804267541603412,
+        "rmse": 1848.9733898836005,
+        "mae": 1351.8747877617604,
+        "wape": 0.23319649146016275,
+        "rmspe": 0.25351216225774376,
+        "mape": 0.21403775477373208,
+        "bias": -0.1827461935941478,
+        "n_rows": 5040,
+        "n_open_rows": 4291
+      }
+    },
+    {
+      "name": "earlier_1",
+      "cutoff": "2023-03-27",
+      "start": "2023-03-28",
+      "end": "2023-05-08",
+      "horizon": 42,
+      "n_train_rows": 530644,
+      "model": {
+        "rmsle": 0.1273087956672553,
+        "rmse": 892.7586286995131,
+        "mae": 655.0040343575448,
+        "wape": 0.10976261193907455,
+        "rmspe": 0.14386255355406394,
+        "mape": 0.11219296240084191,
+        "bias": 0.003124058665713747,
+        "n_rows": 5040,
+        "n_open_rows": 4262
+      },
+      "best_baseline": "seasonal_naive",
+      "best_baseline_metrics": {
+        "rmsle": 0.2349809072392687,
+        "rmse": 1688.21469944491,
+        "mae": 1233.3120600656969,
+        "wape": 0.20667285382684664,
+        "rmspe": 0.2702784434195111,
+        "mape": 0.20868882286678597,
+        "bias": -0.005417146549038243,
+        "n_rows": 5040,
+        "n_open_rows": 4262
+      }
+    },
+    {
+      "name": "earlier_2",
+      "cutoff": "2023-02-13",
+      "start": "2023-02-14",
+      "end": "2023-03-27",
+      "horizon": 42,
+      "n_train_rows": 500404,
+      "model": {
+        "rmsle": 0.1289931416412063,
+        "rmse": 896.1759125016517,
+        "mae": 651.1566176015343,
+        "wape": 0.110342339509986,
+        "rmspe": 0.14180411743058205,
+        "mape": 0.1116220934574066,
+        "bias": 0.0016211747117798048,
+        "n_rows": 5040,
+        "n_open_rows": 4410
+      },
+      "best_baseline": "rolling_7d_mean",
+      "best_baseline_metrics": {
+        "rmsle": 0.24132196023159191,
+        "rmse": 1666.0717904269875,
+        "mae": 1207.0004535147393,
+        "wape": 0.20453336452449286,
+        "rmspe": 0.23821229067881505,
+        "mape": 0.19595851077679616,
+        "bias": -0.0948802708062495,
+        "n_rows": 5040,
+        "n_open_rows": 4410
+      }
+    }
+  ],
+  "validation_notes": [
+    "Each window trains only on data whose TARGET dates precede the window, then forecasts the next 42 days from the window's last known day.",
+    "The primary window was also used to choose hyper-parameters and the boosting-round count, so it is a validation set, not a pristine test set. Earlier windows are robustness checks.",
+    "The deployed model is retrained on all history; its future accuracy cannot be measured because actuals for the forecast window are not part of the dataset."
+  ]
+}

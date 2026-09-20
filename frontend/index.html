@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="Store-level demand forecasting with time-aware validation, model evaluation and feature insights." />
+    <title>Demand Forecasting &amp; Analytics Platform</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      // Apply the saved (or system) theme before first paint to avoid a light/dark flash.
+      (function () {
+        try {
+          var q = new URLSearchParams(location.search).get("theme");
+          var saved = localStorage.getItem("df-theme");
+          var theme = q === "dark" || q === "light" ? q : saved ||
+            (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

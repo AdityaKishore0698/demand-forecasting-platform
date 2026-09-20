@@ -1,0 +1,43 @@
+{
+  "train_rows": 106560,
+  "future_rows": 5040,
+  "n_hubs": 120,
+  "train_start": "2021-01-01",
+  "train_end": "2023-06-19",
+  "forecast_start": "2023-06-20",
+  "forecast_end": "2023-07-31",
+  "calendar_days": 900,
+  "hubs_with_history_gaps": 12,
+  "zero_demand_share": 0.14064376876876877,
+  "closed_day_share": 0.14064376876876877,
+  "closed_days_always_zero": true,
+  "open_days_with_zero_demand": 0,
+  "mean_open_day_demand": 5429.955008572396,
+  "hub_demand_cv": 0.38050675389383054,
+  "promo_uplift_ratio": 1.371563016228347,
+  "weekday_open_rate": {
+    "1": 0.9781313428926864,
+    "2": 0.9857444561774024,
+    "3": 0.9713625866050808,
+    "4": 0.995249406175772,
+    "5": 0.9812753699096504,
+    "6": 0.9766939443535189,
+    "7": 0.1300163666121113
+  },
+  "weekday_mean_demand": {
+    "1": 6254.919204766049,
+    "2": 5574.539702731655,
+    "3": 5303.532844236125,
+    "4": 5361.167727393265,
+    "5": 5917.378169202028,
+    "6": 4149.236409947048,
+    "7": 5538.984894259819
+  },
+  "future_promo_rate": 0.35714285714285715,
+  "future_holiday_rate": 0.023809523809523808,
+  "future_school_closure_rate": 0.30952380952380953,
+  "train_only_columns_excluded": [
+    "AppSessions"
+  ],
+  "data_label": "synthetic-demo"
+}

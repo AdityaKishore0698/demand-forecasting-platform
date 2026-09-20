@@ -1,0 +1,8 @@
+# Local convenience: API only. Run the frontend with `make frontend` (or deploy it separately).
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      CORS_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"

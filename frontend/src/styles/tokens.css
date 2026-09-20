@@ -1,0 +1,98 @@
+/* Design tokens. Both themes are designed, not inverted: surfaces, borders, data-viz
+   colours and shadows all have deliberate light/dark values. */
+:root {
+  color-scheme: light;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --bg: #f4f3ee;
+  --surface: #ffffff;
+  --surface-2: #faf9f5;
+  --surface-3: #f0eee7;
+  --border: #e4e1d7;
+  --border-strong: #d2cec0;
+  --text: #15161a;
+  --text-2: #464851;
+  --text-muted: #777a85;
+
+  --accent: #3550d6;
+  --accent-soft: rgba(53, 80, 214, 0.1);
+  --accent-contrast: #ffffff;
+  --forecast: #e8590c;
+  --forecast-soft: rgba(232, 89, 12, 0.11);
+  --positive: #0b8a6a;
+  --positive-soft: rgba(11, 138, 106, 0.12);
+  --negative: #cf3338;
+  --negative-soft: rgba(207, 51, 56, 0.1);
+  --warning: #a86b0a;
+  --warning-soft: rgba(168, 107, 10, 0.12);
+
+  --grid: rgba(21, 22, 26, 0.07);
+  --shadow-sm: 0 1px 2px rgba(30, 28, 20, 0.05), 0 0 0 0.5px rgba(30, 28, 20, 0.03);
+  --shadow-md: 0 10px 28px -12px rgba(30, 28, 20, 0.18), 0 2px 6px rgba(30, 28, 20, 0.05);
+  --shadow-lg: 0 28px 60px -20px rgba(30, 28, 20, 0.35);
+  --backdrop: rgba(244, 243, 238, 0.78);
+
+  --c-history: #3550d6;
+  --c-forecast: #e8590c;
+  --c-actual: #15161a;
+  --c-baseline: #9b9da6;
+  --c-bar: #3550d6;
+  --g-schedule: #3550d6;
+  --g-promo: #e8590c;
+  --g-calendar: #0b8a6a;
+  --g-recent: #8e44c9;
+  --g-baseline: #c2255c;
+  --g-hub: #d9930d;
+  --g-horizon: #5c7080;
+
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --sidebar-w: 252px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #090b0f;
+  --surface: #11141b;
+  --surface-2: #151922;
+  --surface-3: #1b202b;
+  --border: #212736;
+  --border-strong: #303850;
+  --text: #e8eaf1;
+  --text-2: #b3b8c8;
+  --text-muted: #7e869b;
+
+  --accent: #8197ff;
+  --accent-soft: rgba(129, 151, 255, 0.14);
+  --accent-contrast: #0a0c12;
+  --forecast: #ffa04d;
+  --forecast-soft: rgba(255, 160, 77, 0.13);
+  --positive: #38d6a6;
+  --positive-soft: rgba(56, 214, 166, 0.13);
+  --negative: #ff7a80;
+  --negative-soft: rgba(255, 122, 128, 0.13);
+  --warning: #f2b94b;
+  --warning-soft: rgba(242, 185, 75, 0.13);
+
+  --grid: rgba(232, 234, 241, 0.075);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.02);
+  --shadow-md: 0 14px 32px -14px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 32px 70px -24px rgba(0, 0, 0, 0.85);
+  --backdrop: rgba(9, 11, 15, 0.72);
+
+  --c-history: #8197ff;
+  --c-forecast: #ffa04d;
+  --c-actual: #e8eaf1;
+  --c-baseline: #6d7488;
+  --c-bar: #8197ff;
+  --g-schedule: #8197ff;
+  --g-promo: #ffa04d;
+  --g-calendar: #38d6a6;
+  --g-recent: #c48bff;
+  --g-baseline: #ff7fb0;
+  --g-hub: #f2b94b;
+  --g-horizon: #8fa3b8;
+}
