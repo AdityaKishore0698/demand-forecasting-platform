@@ -2,7 +2,7 @@
 
 An end-to-end machine-learning project that forecasts daily demand for 1,115 stores up to 42 days ahead — data validation, temporal feature engineering, chronological back-testing, a LightGBM model, a FastAPI service and an interactive React dashboard.
 
-**Live demo:** _not deployed yet_ <!-- replace with your Vercel URL after deploying --> · **Repository:** _add your GitHub URL_
+**Live demo:** https://demand-forecasting-platform-eight.vercel.app/ · **Repository:** https://github.com/AdityaKishore0698/demand-forecasting-platform
 
 | Overview (light) | Overview (dark) |
 |---|---|
@@ -57,7 +57,7 @@ docs/         architecture, ML audit, EDA, experiments, deployment checklist, sc
 ## ML approach
 
 - **Direct multi-horizon forecasting.** One LightGBM model predicts the demand `h` days after a *forecast origin* (the last known day), for any `h` in 1–42. History features are frozen at the origin and `h` is itself a feature, so there is no recursive error compounding and no need to invent future inputs.
-- **Tweedie objective** (variance power 1.05, log link) for a non-negative, zero-inflated, right-skewed target; closed days are known in advance and forecast as exactly 0.
+- **Tweedie objective** (variance power 1.05, log link) for a non-negative, right-skewed target with a substantial number of zero-demand observations; closed days are known in advance and forecast as exactly 0.
 - **Single model.** 1,160 trees, 44 features, trained on 5,374,050 (origin, store, horizon) rows built from weekly forecast origins. An offline blend of three model families was evaluated and **not** adopted (gain ≈ 0.03 percentage points of WAPE, within seed noise, three runtimes) — see [docs/ML_AUDIT.md](docs/ML_AUDIT.md).
 
 ## Feature engineering
@@ -124,7 +124,7 @@ React 18 + TypeScript. **Overview** (KPIs, history→forecast chart, trend, week
 
 ## Tech stack
 
-Python · pandas / NumPy · LightGBM · FastAPI · Pydantic v2 · Uvicorn · pytest — React 18 · TypeScript (strict) · Vite · Recharts · TanStack Query · Framer Motion — Docker (API), Render + Vercel (deployment target).
+Python · pandas / NumPy · LightGBM · FastAPI · Pydantic v2 · Uvicorn · pytest — React 18 · TypeScript (strict) · Vite · Recharts · TanStack Query · Framer Motion — Docker · Render · Vercel.
 
 ## Local setup
 
@@ -162,7 +162,7 @@ The repository ships a small bundle (`artifacts/demo/`, ≈1 MB) trained on **sy
 - Only schedule information known in advance is modelled — no weather, price or competitor-event data.
 - Point forecasts only; one global model for all stores; no cold-start path for brand-new stores.
 - No drift monitoring or automated retraining.
-- Not deployed: the public demo, once deployed, runs on synthetic data and its metrics are not the reported results.
+- Public deployment uses the synthetic demo bundle; the reported validation metrics were measured separately on the real Rossmann dataset and are not live production metrics.
 
 ## Future improvements
 
